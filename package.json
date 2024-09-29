@@ -1,13 +1,13 @@
 {
   "name": "cycle-combo",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "0.0.1",
+  "homepage": "https://wkym461a.github.io/cycle-combo-dev/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ci": "echo \"CI: Continuous Integration (Not Implemented)\""
   },
   "dependencies": {
     "react": "^18.3.1",
