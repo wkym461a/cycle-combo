@@ -42,7 +42,7 @@ const matches = [
 function MatchList() {
 
 	return (
-		<div>
+		<div className={style.container}>
 		{matches.map((m, i) => (
 			<div key={i} className={style.listItem}>
 				{`${m[0][0]}, ${m[0][1]} vs. ${m[1][0]}, ${m[1][1]}`}

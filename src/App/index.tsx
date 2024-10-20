@@ -23,29 +23,29 @@ function App() {
 				<MatchStatus />
 			</div>
 			<div className={style.statusSpacer} />
-			<div className={style.list}>
+			<div className={style.subcontainer}>
 				<div className={style.header}>
 					<Header />
 				</div>
-				<div className={style.headerSpacer} />
-				<MatchList />
+				<div className={style.listContainer}>
+					<MatchList />
+				</div>
 			</div>
 		</div>
 		:
 
 		// 特殊レイアウト（スマホ縦向き）
 		<div className={style.spContainer}>
-		<div className={style.spFBox}>
 			<div className={style.spHeader}>
 				<Header />
 			</div>
 			<div className={style.spStatus}>
 				<MatchStatus />
 			</div>
+			<div className={style.spListContainer}>
+				<MatchList />
+			</div>
 		</div>
-		<div className={style.spFBoxSpacer} />
-		<MatchList />
-	</div>
   )
 }
 
