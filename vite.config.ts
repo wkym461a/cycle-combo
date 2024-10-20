@@ -5,5 +5,10 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
-  base: "/cycle-combo/"
-})
+  base: "/cycle-combo/",
+	css: {
+		modules: {
+			localsConvention: 'dashes',
+		},
+	},
+});

@@ -1,0 +1,61 @@
+
+/* 基本レイアウト */
+
+.container {
+	display: flex;
+	width: 100%;
+}
+
+.status {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: calc(100% - var(--match-list-width));
+	height: 100%;
+	z-index: 10;
+}
+
+.status-spacer {
+	width: calc(100% - var(--match-list-width));
+}
+
+.header {
+	position: fixed;
+	width: var(--match-list-width);
+	height: var(--header-height);
+}
+
+.header-spacer {
+	height: var(--header-height);
+}
+
+.list {
+	width: var(--match-list-width);
+	height: 100vh;
+}
+
+/* 特殊レイアウト */
+
+.sp-container {
+	width: 100%;
+}
+
+.sp-f-box {
+	position: fixed;
+	width: 100%;
+	height: calc(var(--header-height) + var(--sp-status-height));
+}
+
+.sp-header {
+	width: 100%;
+	height: var(--header-height);
+}
+
+.sp-status {
+	width: 100%;
+	height: var(--sp-status-height);
+}
+
+.sp-f-box-spacer {
+	height: calc(var(--header-height) + var(--sp-status-height));
+}
