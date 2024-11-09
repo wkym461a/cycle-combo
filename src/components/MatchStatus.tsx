@@ -6,7 +6,12 @@ import TimeDisplay from "./TimeDisplay";
 const CONTENT_WIDTH = 480;
 const CONTENT_HEIGHT = 360;
 
-function MatchStatus() {
+type Props = {
+	timer_s: number,
+	onStartStop: () => void,
+}
+
+function MatchStatus({ timer_s, onStartStop }: Props) {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const useScale = () => {
@@ -52,7 +57,7 @@ function MatchStatus() {
 	return (
 		<div className={style.container} ref={ref}>
 			<div className={style.subcontainer} style={scaleStyle}>
-				<TimeDisplay />
+				<TimeDisplay timer_s={timer_s} onStartStop={onStartStop} />
 				<MatchItem />
 			</div>
 		</div>
