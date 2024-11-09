@@ -41,11 +41,19 @@ const matches = [
 	[["11", "12"], ["13", "14"]],
 ];
 
-function MatchList() {
-	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(true);
+type Props = {
+	onResetTimer: () => void,
+}
 
+function MatchList({ onResetTimer }: Props) {
+	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+	function handleOpenConfirmModal() {
+		setIsConfirmModalOpen(true);
+	}
 
 	function ConfirmHandler() {
+		onResetTimer();
 		setIsConfirmModalOpen(false);
 	}
 
@@ -56,7 +64,7 @@ function MatchList() {
 	return (
 		<div className={style.container}>
 		{matches.map((m, i) => (
-			<div key={i} className={style.listItem}>
+			<div key={i} className={style.listItem} onClick={handleOpenConfirmModal}>
 				{`${m[0][0]}, ${m[0][1]} vs. ${m[1][0]}, ${m[1][1]}`}
 			</div>
 		))}
