@@ -1,3 +1,5 @@
+import { useState } from "react";
+import ConfirmModal from "./ConfirmModal";
 import style from "./MatchList.module.css";
 
 const matches = [
@@ -40,6 +42,16 @@ const matches = [
 ];
 
 function MatchList() {
+	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(true);
+
+
+	function ConfirmHandler() {
+		setIsConfirmModalOpen(false);
+	}
+
+	function CancelHandler() {
+		setIsConfirmModalOpen(false);
+	}
 
 	return (
 		<div className={style.container}>
@@ -48,6 +60,14 @@ function MatchList() {
 				{`${m[0][0]}, ${m[0][1]} vs. ${m[1][0]}, ${m[1][1]}`}
 			</div>
 		))}
+		{isConfirmModalOpen &&
+			<ConfirmModal
+				title="次の組み合わせを開始します"
+				description="タイマがリセットされますが、よろしいですか？"
+				onConfirm={ConfirmHandler}
+				onCancel={CancelHandler}
+			/>
+		}
 		</div>
 	);
 }
