@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "~/components/ConfirmModal";
 import style from "./MatchList.module.css";
 
 const matches = [
