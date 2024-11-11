@@ -1,5 +1,5 @@
-import CustomModal from './CustomModal';
-import style from './ConfirmModal.module.css';
+import ModalBase from './ModalBase';
+import style from './styles/ConfirmModal.module.css';
 
 type Props = {
 	title: string,
@@ -11,7 +11,7 @@ type Props = {
 function ConfirmModal({ title, description, onConfirm, onCancel }: Props) {
 
 	return (
-		<CustomModal onClose={onCancel}>
+		<ModalBase onClose={onCancel}>
 			<div>{title}</div>
 			{(description) &&
 				<div>{description}</div>
@@ -20,7 +20,7 @@ function ConfirmModal({ title, description, onConfirm, onCancel }: Props) {
 				<div onClick={onConfirm}>はい</div>
 				<div onClick={onCancel}>いいえ</div>
 			</div>
-		</CustomModal>
+		</ModalBase>
 	);
 }
 

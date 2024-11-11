@@ -1,5 +1,5 @@
 import { IoSettingsSharp } from "react-icons/io5";
-import style from "./Header.module.css";
+import style from "./styles/Header.module.css";
 
 function Header() {
 

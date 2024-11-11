@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ConfirmModal from "./ConfirmModal";
-import style from "./MatchList.module.css";
+import ConfirmModal from "~/components/ConfirmModal";
+import style from "./styles/MatchList.module.css";
 
 const matches = [
 	[["1", "2"], ["3", "4"]],
