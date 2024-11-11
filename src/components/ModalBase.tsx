@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import style from './ModalBase.module.css';
+import style from './styles/ModalBase.module.css';
 
 type Props = {
 	onClose: () => void,

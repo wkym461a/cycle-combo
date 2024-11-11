@@ -1,5 +1,5 @@
-import ModalBase from '../ModalBase';
-import style from './ConfirmModal.module.css';
+import ModalBase from './ModalBase';
+import style from './styles/ConfirmModal.module.css';
 
 type Props = {
 	title: string,

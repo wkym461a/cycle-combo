@@ -1,8 +1,8 @@
-import Header from '../../components/Header';
-import MatchList from '../../components/MatchList';
-import MatchStatus from '../../components/MatchStatus';
+import Header from './components/Header';
+import MatchList from './components/MatchList';
+import MatchStatus from './components/MatchStatus';
 
-import style from './BasicLayout.module.css';
+import style from './styles/BasicLayout.module.css';
 
 type Props = {
 	timer_s: number,

@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import style from "./MatchStatus.module.css";
-import MatchItem from "../MatchItem";
-import TimeDisplay from "../TimeDisplay";
+import style from "./styles/MatchStatus.module.css";
+import MatchItem from "./MatchItem";
+import TimeDisplay from "./TimeDisplay";
 
 const CONTENT_WIDTH = 480;
 const CONTENT_HEIGHT = 360;

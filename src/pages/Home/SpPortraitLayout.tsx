@@ -1,8 +1,8 @@
-import Header from '../../components/Header';
-import MatchList from '../../components/MatchList';
-import MatchStatus from '../../components/MatchStatus';
+import Header from './components/Header';
+import MatchList from './components/MatchList';
+import MatchStatus from './components/MatchStatus';
 
-import style from './SpPortraitLayout.module.css';
+import style from './styles/SpPortraitLayout.module.css';
 
 type Props = {
 	timer_s: number,

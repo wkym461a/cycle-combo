@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { mediaQuery, useMediaQuery } from '~/useMediaQuery';
 import { useOrientation } from '~/useOrientation';
-import BasicLayout from './layouts/BasicLayout';
-import SpPortraitLayout from './layouts/SpPortraitLayout';
-import style from './Home.module.css';
+import BasicLayout from './BasicLayout';
+import SpPortraitLayout from './SpPortraitLayout';
+import style from './styles/Home.module.css';
 
 const TIMER_INIT_SEC = 5 * 60;
 let timeoutID: number | undefined = undefined;
@@ -19,10 +19,12 @@ function Home() {
 		orientation.type === "portrait-secondary"
 	);
 
+	// タイマ再生・停止ハンドラ
 	function handleStartStopTimer() {
 		setIsTimerRunning((pre) => (!pre));
 	}
 
+	// タイマリセットハンドラ
 	function handleResetTimer() {
 		window.clearTimeout(timeoutID);
 		setTimer_s(TIMER_INIT_SEC);
