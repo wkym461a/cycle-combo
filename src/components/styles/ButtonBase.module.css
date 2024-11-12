@@ -1,0 +1,10 @@
+
+button {
+	all: unset;
+}
+button:focus-visible {
+	outline-width: 0;
+}
+
+.button-base {
+}

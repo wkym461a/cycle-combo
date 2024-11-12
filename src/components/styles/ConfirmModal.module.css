@@ -1,0 +1,42 @@
+
+.message-container {
+	padding: 16px 32px;
+}
+
+.title {
+	font-size: 1.5rem;
+}
+
+.subtitle {
+	font-size: 1.0rem;
+}
+
+.button-container {
+	border-top: 1px solid #999;
+}
+.button-container > * {
+	border-left: 1px solid #999;
+}
+.button-container > *:first-child {
+	border-left: none;
+}
+
+.button-yes {
+	padding: 8px 0;
+	width: 50%;
+	text-align: center;
+	font-size: 1.2rem;
+	box-sizing: border-box;
+
+	color: #09E;
+}
+
+.button-no {
+	padding: 8px 0;
+	width: 50%;
+	text-align: center;
+	font-size: 1.2rem;
+	box-sizing: border-box;
+
+	color: #666;
+}
