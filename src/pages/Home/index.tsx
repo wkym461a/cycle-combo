@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { mediaQuery, useMediaQuery } from '~/useMediaQuery';
 import { useOrientation } from '~/useOrientation';
+import useSound from 'use-sound';
 import BasicLayout from './BasicLayout';
 import SpPortraitLayout from './SpPortraitLayout';
 import style from './styles/Home.module.css';
+import sound from '~/assets/timer.mp3';
 
 const TIMER_INIT_SEC = 5 * 60;
 let timeoutID: number | undefined = undefined;
@@ -19,9 +21,12 @@ function Home() {
 		orientation.type === "portrait-secondary"
 	);
 
+	const [play, { stop }] = useSound(sound);
+
 	// タイマ再生・停止ハンドラ
 	function handleStartStopTimer() {
 		setIsTimerRunning((pre) => (!pre));
+		stop();
 	}
 
 	// タイマリセットハンドラ
@@ -29,6 +34,7 @@ function Home() {
 		window.clearTimeout(timeoutID);
 		setTimer_s(TIMER_INIT_SEC);
 		setIsTimerRunning(true);
+		stop();
 	}
 
 	useEffect(() => {
@@ -42,6 +48,11 @@ function Home() {
 		window.clearTimeout(timeoutID);
 		timeoutID = window.setTimeout(() => {
 			setTimer_s((pre) => (pre - 1));
+
+			if (timer_s <= 1) {
+				setTimer_s(TIMER_INIT_SEC);
+				play();
+			}
 		}, 1000);
 
 	}, [timer_s, isTimerRunning]);
