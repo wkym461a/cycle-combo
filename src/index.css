@@ -18,6 +18,20 @@
 	--match-list-width: 240px;
 	--header-height: 48px;
 	--sp-status-height: 50vh;
+
+	/* 余白サイズ（垂直方向） */
+	/* --vspace-xs: 2px; */
+	--vspace-s: 4px;
+	--vspace-m: 8px;
+	--vspace-l: 16px;
+	/* --vspace-xl: 32px; */
+
+	/* 余白サイズ（水平方向） */
+	/* --hspace-xs: 4px; */
+	--hspace-s: 8px;
+	--hspace-m: 16px;
+	--hspace-l: 32px;
+	/* --hspace-xl: 64px; */
 }
 
 html, body {

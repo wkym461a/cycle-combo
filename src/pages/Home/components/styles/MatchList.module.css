@@ -6,6 +6,6 @@
 }
 
 .list-item {
-	padding: 4px;
+	padding: var(--vspace-m);
 	border-bottom: 1px solid #444;
 }
