@@ -8,4 +8,5 @@
 .list-item {
 	padding: var(--vspace-m);
 	border-bottom: 1px solid #444;
+	font-size: var(--fontsize-fixed-m);
 }

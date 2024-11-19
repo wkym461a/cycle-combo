@@ -1,3 +1,4 @@
+import style from "./styles/TimeDisplay.module.css";
 
 type Props = {
 	timer_s: number,
@@ -10,8 +11,8 @@ function TimeDisplay({ timer_s, onStartStop }: Props) {
 	const sec = Math.floor(timer_s % 60).toString().padStart(2, '0');
 
 	return (
-		<div onClick={onStartStop}>
-			{`${min}:${sec} (${timer_s}[s])`}
+		<div className={style.container} onClick={onStartStop}>
+			{`${min}:${sec}`}
 		</div>
 	);
 }

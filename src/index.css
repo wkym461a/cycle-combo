@@ -32,6 +32,20 @@
 	--hspace-m: 16px;
 	--hspace-l: 32px;
 	/* --hspace-xl: 64px; */
+
+	/* 文字サイズ（可変） */
+	/* --fontsize-var-xs: calc(var(--fontsize-var-s) * 0.75); */
+	--fontsize-var-s: clamp(0.8rem, calc(0.75vw + 0.75rem), 1.2rem);
+	/* --fontsize-var-m: calc(var(--fontsize-var-s) * 1.75); */
+	/* --fontsize-var-l: calc(var(--fontsize-var-s) * 2.5); */
+	/* --fontsize-var-xl: calc(var(--fontsize-var-s) * 3.75); */
+	--fontsize-var-xxl: calc(var(--fontsize-var-s) * 5.0);
+
+	/* 文字サイズ（固定） */
+	/* --fontsize-fixed-s: 0.75rem; */
+	--fontsize-fixed-m: 1.0rem;
+	--fontsize-fixed-l: 1.25rem;
+	--fontsize-fixed-xl: 1.5rem;
 }
 
 html, body {
