@@ -1,8 +1,9 @@
+import style from "./styles/MatchItem.module.css";
 
 function MatchItem() {
 
 	return (
-		<div>
+		<div className={style.container}>
 			1, 2 vs. 3, 4
 		</div>
 	);

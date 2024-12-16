@@ -1,23 +1,66 @@
+/* 定数宣言 */
+:root {
+	--match-list-width: 240px;
+	--header-height: 48px;
+	--sp-status-height: 50vh;
+
+	/* 余白サイズ（垂直方向） */
+	/* --vspace-xs: 2px; */
+	--vspace-s: 4px;
+	--vspace-m: 8px;
+	--vspace-l: 16px;
+	/* --vspace-xl: 32px; */
+
+	/* 余白サイズ（水平方向） */
+	/* --hspace-xs: 4px; */
+	--hspace-s: 8px;
+	--hspace-m: 16px;
+	--hspace-l: 32px;
+	/* --hspace-xl: 64px; */
+
+	/* 文字サイズ（可変） */
+	/* --fontsize-var-xs: calc(var(--fontsize-var-s) * 0.75); */
+	--fontsize-var-s: clamp(0.8rem, calc(0.75vw + 0.75rem), 1.2rem);
+	/* --fontsize-var-m: calc(var(--fontsize-var-s) * 1.75); */
+	/* --fontsize-var-l: calc(var(--fontsize-var-s) * 2.5); */
+	/* --fontsize-var-xl: calc(var(--fontsize-var-s) * 3.75); */
+	--fontsize-var-xxl: calc(var(--fontsize-var-s) * 5.0);
+
+	/* 文字サイズ（固定） */
+	/* --fontsize-fixed-s: 0.75rem; */
+	--fontsize-fixed-m: 1.0rem;
+	--fontsize-fixed-l: 1.25rem;
+	--fontsize-fixed-xl: 1.5rem;
+
+	/* 色 */
+
+	/* テーマ色 */
+	--color-primary: #008080;
+	--color-primary-light: #40C0C0;
+	--color-primary-dark: #004040;
+	--color-fg-on-primary: #EEE;
+	--color-secondary: #A04040;
+	--color-secondary-light: #F06060;
+	--color-secondary-dark: #802020;
+	--color-fg-on-secondary: #EEE;
+	--color-bg: #EEE;
+	--color-fg: #111;
+	--color-border: #999;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--color-fg);
+  background-color: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* 定数宣言 */
-:root {
-	--match-list-width: 240px;
-	--header-height: 48px;
-	--sp-status-height: 50vh;
 }
 
 html, body {
