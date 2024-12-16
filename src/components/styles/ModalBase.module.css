@@ -21,6 +21,5 @@
 	border-radius: 8px;
 	overflow: hidden;
 
-	background-color: #EEE;
-	color: #111;
+	background-color: var(--color-bg);
 }
