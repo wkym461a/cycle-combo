@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ConfirmModal from "~/components/ConfirmModal";
 import style from "./styles/MatchList.module.css";
+import { useTimer } from "~/contexts/timer";
 
 const matches = [
 	[["1", "2"], ["3", "4"]],
@@ -41,11 +42,8 @@ const matches = [
 	[["11", "12"], ["13", "14"]],
 ];
 
-type Props = {
-	onResetTimer: () => void,
-}
-
-function MatchList({ onResetTimer }: Props) {
+function MatchList() {
+	const { resetTimer } = useTimer();
 	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
 	function handleOpenConfirmModal() {
@@ -53,7 +51,7 @@ function MatchList({ onResetTimer }: Props) {
 	}
 
 	function ConfirmHandler() {
-		onResetTimer();
+		resetTimer();
 		setIsConfirmModalOpen(false);
 	}
 
