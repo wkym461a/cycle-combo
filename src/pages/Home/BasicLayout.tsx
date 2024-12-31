@@ -4,17 +4,11 @@ import MatchStatus from './components/MatchStatus';
 
 import style from './styles/BasicLayout.module.css';
 
-type Props = {
-	timer_s: number,
-	onStartStopTimer: () => void,
-	onResetTimer: () => void,
-}
-
-function BasicLayout({ timer_s, onStartStopTimer, onResetTimer }: Props) {
+function BasicLayout() {
 	return (
 		<div className={style.container}>
 			<div className={style.status}>
-				<MatchStatus timer_s={timer_s} onStartStop={onStartStopTimer} />
+				<MatchStatus />
 			</div>
 			<div className={style.statusSpacer} />
 			<div className={style.subcontainer}>
@@ -22,7 +16,7 @@ function BasicLayout({ timer_s, onStartStopTimer, onResetTimer }: Props) {
 					<Header />
 				</div>
 				<div className={style.listContainer}>
-					<MatchList onResetTimer={onResetTimer} />
+					<MatchList />
 				</div>
 			</div>
 		</div>
