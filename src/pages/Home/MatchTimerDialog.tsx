@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import Drawer from '@mui/material/Drawer';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -47,6 +47,9 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 		onClose();
 	}
 
+	function handleOpenMatchListDrawer() {
+		setIsOpenMatchListDrawer(true);
+	}
 	function handleCloseMatchListDrawer() {
 		setIsOpenMatchListDrawer(false);
 	}
@@ -115,7 +118,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 
 			<Display />
 
-			<Drawer
+			<SwipeableDrawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -124,6 +127,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 				variant='persistent'
 				anchor='right'
 				open={isOpenMatchListDrawer}
+				onOpen={handleOpenMatchListDrawer}
 				onClose={handleCloseMatchListDrawer}
 			>
 				<Toolbar />
@@ -171,7 +175,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 						))}
 					</List>
 				</Box>
-			</Drawer>
+			</SwipeableDrawer>
 		</Dialog>
 	)
 }
