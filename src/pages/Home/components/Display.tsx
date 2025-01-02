@@ -56,9 +56,11 @@ function Display() {
 			handleResize();
 
 			window.addEventListener('resize', handleResize);
+			window.addEventListener('orientationchange', handleResize);
 
 			return () => {
 				window.removeEventListener('resize', handleResize);
+				window.removeEventListener('orientationchange', handleResize);
 			};
 		}, []);
 
@@ -114,7 +116,7 @@ function Display() {
 							variant='determinate'
 							value={100}
 							size='90%'
-							thickness={1 / scale}
+							thickness={0.4}
 						/>
 
 						{/* 円形タイマーのProgressBar */}
@@ -133,7 +135,7 @@ function Display() {
 							variant='determinate'
 							value={ timer_s * -100 / initTimer_s }
 							size='90%'
-							thickness={1 / scale}
+							thickness={0.4}
 						/>
 
 						<Stack
