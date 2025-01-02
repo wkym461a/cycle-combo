@@ -1,28 +1,35 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from "react";
 
-const InitialTimer = 5 * 60;
+let timeoverAction: () => void = () => console.log(`Timer: timeover action`);
+export function setTimeoverAction(action: () => void) {
+	timeoverAction = action;
+}
 
 // 状態の型
 type State = {
+	initTimer_s: number,
 	timer_s: number,
 	isRunning: boolean,
 }
 
 // 状態の初期値
 const initialState: State = {
-	timer_s: InitialTimer,
-	isRunning: true,
+	initTimer_s: 0,
+	timer_s: 0,
+	isRunning: false,
 }
 
 // 状態に対する操作の型
 type Action =
-	| { type: 'decrement' }
+	| { type: 'countdown' }
+	| { type: 'set-init', initTimer_s: number }
 	| { type: 'start' }
 	| { type: 'stop' }
 	| { type: 'reset' }
 
 // 外部公開する操作
 type ExtAction = {
+	setInitTimer: (initTimer_s: number) => void,
 	startTimer: () => void,
 	stopTimer: () => void,
 	resetTimer: () => void,
@@ -33,10 +40,16 @@ type TimerContextType = State & ExtAction;
 
 const reducer = (state: State, action: Action): State => {
 	switch (action.type) {
-	case 'decrement':
+	case 'countdown':
 		return {
 			...state,
 			timer_s: Math.max(state.timer_s - 1, 0),
+		}
+	case 'set-init':
+		return {
+			...state,
+			initTimer_s: action.initTimer_s,
+			timer_s: action.initTimer_s,
 		}
 	case 'start':
 		return {
@@ -51,7 +64,7 @@ const reducer = (state: State, action: Action): State => {
 	case 'reset':
 		return {
 			...state,
-			timer_s: initialState.timer_s,
+			timer_s: state.initTimer_s,
 		}
 	default:
 		return state;
@@ -60,6 +73,7 @@ const reducer = (state: State, action: Action): State => {
 
 const TimerContext = createContext<TimerContextType>({
 	...initialState,
+	setInitTimer: (_: number) => {},
 	startTimer: () => {},
 	stopTimer: () => {},
 	resetTimer: () => {},
@@ -70,12 +84,14 @@ export const TimerProvider: React.FC<PropsWithChildren> = (props: PropsWithChild
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	// コンテキストのインスタンス生成
+	const setInitTimer = (initTimer_s: number) => dispatch({ type: 'set-init', initTimer_s });
 	const startTimer = () => dispatch({ type: 'start' });
 	const stopTimer = () => dispatch({ type: 'stop' });
 	const resetTimer = () => dispatch({ type: 'reset' });
 	const value = useMemo<TimerContextType>(
 		() => ({
 			...state,
+			setInitTimer,
 			startTimer,
 			stopTimer,
 			resetTimer,
@@ -84,9 +100,13 @@ export const TimerProvider: React.FC<PropsWithChildren> = (props: PropsWithChild
 	);
 
 	// カウントダウン処理
-	const decrementTimer = () => dispatch({ type: 'decrement' });
+	const countdownTimer = () => dispatch({ type: 'countdown' });
 	useEffect(() => {
-		if ((!state.isRunning) || (state.timer_s <= 0)) {
+		if (
+			(state.initTimer_s <= 0) ||
+			(!state.isRunning) ||
+			(state.timer_s <= 0)
+		) {
 			window.clearTimeout(timeoutID);
 			timeoutID = undefined;
 			return;
@@ -95,11 +115,11 @@ export const TimerProvider: React.FC<PropsWithChildren> = (props: PropsWithChild
 		// タイマカウントダウン設定
 		window.clearTimeout(timeoutID);
 		timeoutID = window.setTimeout(() => {
-			decrementTimer();
+			countdownTimer();
 
 			if (state.timer_s <= 1) {
 				resetTimer();
-				// play();
+				timeoverAction();
 			}
 		}, 1000);
 
