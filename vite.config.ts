@@ -10,32 +10,32 @@ export default defineConfig({
 		tsconfigPaths(),
 		VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['assets/favicon.ico', 'assets/apple-touch-icon.png'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       injectRegister: 'auto',
       manifest: {
         name: 'バドミントン部タイマ',
         short_name: 'バド部タイマ',
         description: 'ダブルス競技向けインターバルタイマ',
-        theme_color: '#008080',
+        theme_color: '#2c2c2c',
         icons: [
           {
-            src: 'assets/web-app-manifest-192x192.png',
+            src: 'web-app-manifest-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'assets/web-app-manifest-512x512.png',
+            src: 'web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'assets/web-app-manifest-512x512.png',
+            src: 'web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'assets/web-app-manifest-512x512.png',
+            src: 'web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
