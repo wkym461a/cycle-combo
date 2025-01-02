@@ -56,11 +56,13 @@ function Display() {
 			handleResize();
 
 			window.addEventListener('resize', handleResize);
-			window.addEventListener('orientationchange', handleResize);
+
+			const intervalID = window.setInterval(() => {console.log(`handleResize`); handleResize() }, 500);
 
 			return () => {
 				window.removeEventListener('resize', handleResize);
-				window.removeEventListener('orientationchange', handleResize);
+
+				window.clearInterval(intervalID);
 			};
 		}, []);
 
