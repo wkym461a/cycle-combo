@@ -148,7 +148,7 @@ function Display() {
 							size='90%'
 							thickness={0.4}
 						/>
-						{/* <Progress
+						<Progress
 							value={ timer_s * -100 / initTimer_s }
 							style={{
 								top: 0,
@@ -161,8 +161,9 @@ function Display() {
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'center',
+								opacity: 0.2,
 							}}
-						/> */}
+						/>
 
 						<Stack
 							spacing={4}
