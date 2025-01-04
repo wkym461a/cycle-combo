@@ -110,22 +110,24 @@ function Display() {
 								left: 0,
 								bottom: 0,
 								right: 0,
-								width: '100%',
-								height: '100%',
 								position: 'absolute',
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'center',
 								opacity: 0.1,
+								'& .MuiCircularProgress-svg': {
+									width: '100%',
+									height: '100%',
+								},
 							}}
 							variant='determinate'
 							value={100}
-							size={`${((isLandscape) ? contentHeight : contentWidth) * 0.9}px`}
-							// thickness={0.4}
+							size='90%'
+							thickness={0.4}
 						/>
 
 						{/* 円形タイマーのProgressBar */}
-						{/* <CircularProgress
+						<CircularProgress
 							sx={{
 								m: '5%',
 								top: 0,
@@ -136,13 +138,17 @@ function Display() {
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'center',
+								'& .MuiCircularProgress-svg': {
+									width: '100%',
+									height: '100%',
+								},
 							}}
 							variant='determinate'
 							value={ timer_s * -100 / initTimer_s }
-							size={`${((isLandscape) ? contentHeight : contentWidth) * 0.9}px`}
-							// thickness={0.4}
-						/> */}
-						<Progress
+							size='90%'
+							thickness={0.4}
+						/>
+						{/* <Progress
 							value={ timer_s * -100 / initTimer_s }
 							style={{
 								top: 0,
@@ -156,7 +162,7 @@ function Display() {
 								alignItems: 'center',
 								justifyContent: 'center',
 							}}
-						/>
+						/> */}
 
 						<Stack
 							spacing={4}
