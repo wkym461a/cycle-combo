@@ -18,7 +18,11 @@ function Progress({ value, style }: Props) {
     <div style={style}>
       <svg
         viewBox={`0 0 ${size} ${size}`}
-        style={{ transform: "rotate(-90deg)" }} // そのままだと3時の方向が起点になってしまうので-90°回転させてます
+        style={{
+					transform: "rotate(-90deg)",
+					width: '100%',
+					height: '100%',
+				}} // そのままだと3時の方向が起点になってしまうので-90°回転させてます
       >
         <circle
           r={radius}
