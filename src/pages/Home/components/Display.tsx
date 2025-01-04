@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 
 import MatchItem from "./MatchItem";
 import { useMatches } from "~/contexts/matches";
-import Progress from "~/components/Progress";
 
 const CONTENT_WIDTH = 120;
 const CONTENT_HEIGHT = 120;
@@ -147,22 +146,6 @@ function Display() {
 							value={ timer_s * -100 / initTimer_s }
 							size='90%'
 							thickness={0.4}
-						/>
-						<Progress
-							value={ timer_s * -100 / initTimer_s }
-							style={{
-								top: 0,
-								left: 0,
-								bottom: 0,
-								right: 0,
-								width: '100%',
-								height: '100%',
-								position: 'absolute',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								opacity: 0.2,
-							}}
 						/>
 
 						<Stack
