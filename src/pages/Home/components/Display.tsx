@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 
 import MatchItem from "./MatchItem";
 import { useMatches } from "~/contexts/matches";
+import Progress from "~/components/Progress";
 
 const CONTENT_WIDTH = 120;
 const CONTENT_HEIGHT = 120;
@@ -122,7 +123,7 @@ function Display() {
 						/>
 
 						{/* 円形タイマーのProgressBar */}
-						<CircularProgress
+						{/* <CircularProgress
 							sx={{
 								m: '5%',
 								top: 0,
@@ -138,6 +139,21 @@ function Display() {
 							value={ timer_s * -100 / initTimer_s }
 							size={`${((isLandscape) ? contentHeight : contentWidth) * 0.9}px`}
 							// thickness={0.4}
+						/> */}
+						<Progress
+							value={ timer_s * -100 / initTimer_s }
+							style={{
+								top: 0,
+								left: 0,
+								bottom: 0,
+								right: 0,
+								width: '100%',
+								height: '100%',
+								position: 'absolute',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+							}}
 						/>
 
 						<Stack
