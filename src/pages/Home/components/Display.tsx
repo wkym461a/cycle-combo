@@ -104,7 +104,7 @@ function Display() {
 						{/* 円形タイマーのProgressBarの跡 */}
 						<CircularProgress
 							sx={{
-								m: `${((isLandscape) ? contentHeight : contentWidth) * 0.05}px`,
+								m: '5%',
 								top: 0,
 								left: 0,
 								bottom: 0,
@@ -118,13 +118,13 @@ function Display() {
 							variant='determinate'
 							value={100}
 							size={`${((isLandscape) ? contentHeight : contentWidth) * 0.9}px`}
-							thickness={0.4}
+							// thickness={0.4}
 						/>
 
 						{/* 円形タイマーのProgressBar */}
 						<CircularProgress
 							sx={{
-								m: `${((isLandscape) ? contentHeight : contentWidth) * 0.05}px`,
+								m: '5%',
 								top: 0,
 								left: 0,
 								bottom: 0,
@@ -137,7 +137,7 @@ function Display() {
 							variant='determinate'
 							value={ timer_s * -100 / initTimer_s }
 							size={`${((isLandscape) ? contentHeight : contentWidth) * 0.9}px`}
-							thickness={0.4}
+							// thickness={0.4}
 						/>
 
 						<Stack
