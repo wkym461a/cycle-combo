@@ -5,8 +5,6 @@ import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import HelpIcon from '@mui/icons-material/Help';
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
@@ -62,21 +60,20 @@ function Home() {
 				<AppBar position='sticky'>
 					<Toolbar>
 						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-						バドミントン部タイマ
+							バドミントン部タイマ
 						</Typography>
-						<IconButton
-							size="large"
-							edge="start"
-							color="inherit"
-							aria-label="help"
-						>
-							<HelpIcon />
-						</IconButton>
 					</Toolbar>
 				</AppBar>
 
 				<Container maxWidth='sm'>
-					<Stack spacing={8} mt={8} mb={16}>
+					<Stack
+						spacing={8}
+						mt={8}
+						mb={16}
+						sx={{
+							alignItems: 'center',
+						}}
+					>
 						<FormControl sx={{ width: '100%' }}>
 							<InputLabel id="label-select-timer-min">タイマ</InputLabel>
 							<Select
@@ -113,11 +110,19 @@ function Home() {
 						</FormControl>
 
 						<Button
+							fullWidth
 							variant='contained'
 							onClick={handleOpenTimerDialog}
 						>
 							開始
 						</Button>
+
+						{/* <Typography
+							component='div'
+							sx={{ pt: '120px' }}
+						>
+							ver. {import.meta.env.VITE_VERSION}
+						</Typography> */}
 					</Stack>
 				</Container>
 			</Container>
