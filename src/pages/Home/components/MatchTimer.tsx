@@ -7,6 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Typograpy from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
+import ConfirmModal from "~/components/ConfirmModal";
 import MatchItem from "./MatchItem";
 import { useMatches } from "~/contexts/matches";
 
@@ -18,9 +19,10 @@ const LANDSCAPE_CTRL_WIDTH = 144;
 
 let isLandscape = true;
 
-function Display() {
+function MatchTimer() {
 	const { initTimer_s, timer_s, isRunning, startTimer, stopTimer, resetTimer } = useTimer();
 	const { matches, currentMatchIndex } = useMatches();
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
 
 	const min = Math.floor(timer_s / 60).toString().padStart(2, '0');
@@ -83,6 +85,17 @@ function Display() {
 		height: `${contentHeight + heightOffset}px`,
 	}
 
+	function handleModalOpen() {
+		setIsModalOpen(true);
+	}
+	function handleModalClose() {
+		setIsModalOpen(false);
+	}
+	function handleConfirmResetTimer() {
+		setIsModalOpen(false);
+		resetTimer();
+	}
+
 	return (
 		<Box
 			ref={ref}
@@ -98,7 +111,6 @@ function Display() {
 							height: `${(isLandscape) ? contentHeight : contentWidth}px`,
 							position: 'relative',
 							display: 'inline-flex',
-							// bgcolor: 'green',
 						}}
 					>
 						{/* 円形タイマーのProgressBarの跡 */}
@@ -212,7 +224,7 @@ function Display() {
 							}
 							<Button
 								variant="outlined"
-								onClick={resetTimer}
+								onClick={handleModalOpen}
 							>
 								リセット
 							</Button>
@@ -256,7 +268,7 @@ function Display() {
 							<Button
 								variant="outlined"
 								sx={{ width: `33%` }}
-								onClick={resetTimer}
+								onClick={handleModalOpen}
 							>
 								リセット
 							</Button>
@@ -264,11 +276,18 @@ function Display() {
 					</Box>
 					}
 				</Stack>
-
 			</Box>
+
+			<ConfirmModal
+				isOpen={isModalOpen}
+				onClose={handleModalClose}
+				onConfirm={handleConfirmResetTimer}
+				title='タイマをリセットします'
+				description='現在の試合は維持されます'
+			/>
 		</Box>
 	);
 
 }
 
-export default Display;
+export default MatchTimer;

@@ -8,21 +8,13 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-
-import Box from '@mui/material/Box';
-import Backdrop from '@mui/material/Backdrop';
-import Stack from '@mui/material/Stack';
 
 import useSound from 'use-sound';
 import sound from '~/assets/timer.mp3';
 
-import Display from './components/Display';
-import MatchItem from "./components/MatchItem";
+import ConfirmModal from "~/components/ConfirmModal";
+import MatchTimer from './components/MatchTimer';
+import MatchListDrawer from './components/MatchListDrawer';
 
 import { useTimer, setTimeoverAction } from '~/contexts/timer';
 import { useMatches } from '~/contexts/matches';
@@ -36,6 +28,7 @@ type Props = {
 
 function MatchTimerDialog({ isOpen, onClose }: Props) {
 	const [isOpenMatchListDrawer, setIsOpenMatchListDrawer] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const { resetTimer } = useTimer();
 	const { matches, currentMatchIndex, nextMatch, jumpMatch } = useMatches();
@@ -47,9 +40,6 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 		onClose();
 	}
 
-	function handleOpenMatchListDrawer() {
-		setIsOpenMatchListDrawer(true);
-	}
 	function handleCloseMatchListDrawer() {
 		setIsOpenMatchListDrawer(false);
 	}
@@ -57,9 +47,15 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 		setIsOpenMatchListDrawer(pre => !pre);
 	}
 
-	function handleJumpMatch(matchIndex: number) {
-		resetTimer();
-		jumpMatch(matchIndex);
+	function handleModalOpen() {
+		setIsModalOpen(true);
+	}
+	function handleModalClose() {
+		setIsModalOpen(false);
+	}
+	function handleConfirmClose() {
+		setIsModalOpen(false);
+		handleClose();
 	}
 
 	useEffect(() => {
@@ -88,7 +84,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 						size="large"
 						edge="start"
 						color="inherit"
-						onClick={handleClose}
+						onClick={handleModalOpen}
 						aria-label="close"
 					>
 						<CloseIcon />
@@ -116,66 +112,20 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 				</Toolbar>
 			</AppBar>
 
-			<Display />
+			<MatchTimer />
 
-			<SwipeableDrawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-        }}
-				variant='persistent'
-				anchor='right'
-				open={isOpenMatchListDrawer}
-				onOpen={handleOpenMatchListDrawer}
+			<MatchListDrawer
+				width={drawerWidth}
+				isOpen={isOpenMatchListDrawer}
 				onClose={handleCloseMatchListDrawer}
-			>
-				<Toolbar />
-				<Box sx={{ overflow: 'auto' }}>
-					<List disablePadding>
-						{matches.map((match, i) => (
-							<>
-								<ListItem key={i} disablePadding sx={{ position: 'relative' }}>
-									<ListItemButton
-										onClick={() => handleJumpMatch(i)}
-										sx={{ px: 0.5, py: 2, overflow: 'hidden' }}
-									>
-										<Backdrop
-											open={i < currentMatchIndex}
-											sx={(theme) => ({
-												position: 'absolute',
-												top: 0,
-												left: 0,
-												bottom: 0,
-												right: 0,
-												width: '100%',
-												height: '100%',
-												zIndex: theme.zIndex.drawer + 1,
-											})}
-											transitionDuration={500}
-										/>
-										<Stack
-											direction='row'
-											spacing={2}
-											sx={{
-												justifyContent: 'center',
-												alignItems: 'center',
-											}}
-										>
-											<ListItemText
-												primary={`${i+1}.`}
-												sx={{ width: '31.75px', textAlign: 'right' }}
-											/>
-											<MatchItem match={match} isContained={i === currentMatchIndex} scale={1} />
-										</Stack>
-									</ListItemButton>
-								</ListItem>
-								{/* <Divider /> */}
-							</>
-						))}
-					</List>
-				</Box>
-			</SwipeableDrawer>
+			/>
+
+			<ConfirmModal
+				isOpen={isModalOpen}
+				onClose={handleModalClose}
+				onConfirm={handleConfirmClose}
+				title='タイマを終了します'
+			/>
 		</Dialog>
 	)
 }
