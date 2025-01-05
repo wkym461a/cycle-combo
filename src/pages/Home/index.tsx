@@ -78,12 +78,12 @@ function Home() {
 				<Container maxWidth='sm'>
 					<Stack spacing={8} mt={8} mb={16}>
 						<FormControl sx={{ width: '100%' }}>
-							<InputLabel id="label-select-timer-min">タイマー</InputLabel>
+							<InputLabel id="label-select-timer-min">タイマ</InputLabel>
 							<Select
 								labelId="label-select-timer-min"
 								id="select-timer-min"
 								value={timer_min}
-								label="タイマー"
+								label="タイマ"
 								onChange={handleTimerChange}
 							>
 								{TIMER_SELECT_LIST.map(i => (
