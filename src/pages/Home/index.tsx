@@ -21,6 +21,13 @@ import { useMatches } from '~/contexts/matches';
 
 const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
 
+const getCurrentVersion = (): string => {
+	return import.meta.env.VITE_VERSION;
+}
+const getCurrentRevision = (): string => {
+	return import.meta.env.VITE_REVISION;
+}
+
 function Home() {
 	const [isOpenTimerDialog, setIsOpenTimerDialog] = useState(false);
 
@@ -117,12 +124,11 @@ function Home() {
 							開始
 						</Button>
 
-						{/* <Typography
+						<Typography
 							component='div'
-							sx={{ pt: '120px' }}
 						>
-							ver. {import.meta.env.VITE_VERSION}
-						</Typography> */}
+							ver.{getCurrentVersion()} (r{getCurrentRevision()})
+						</Typography>
 					</Stack>
 				</Container>
 			</Container>
