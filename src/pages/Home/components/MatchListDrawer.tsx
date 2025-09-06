@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
@@ -27,6 +27,7 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 	const { matches, currentMatchIndex, jumpMatch } = useMatches();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [destMatchIndex, setDestMatchIndex] = useState(0);
+	const listRef = useRef<HTMLUListElement>(null);
 
 	function handleModalOpen(matchIndex: number) {
 		setIsModalOpen(true);
@@ -42,6 +43,18 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 		onClose();
 	}
 
+	function scrollToItem(index: number) {
+		if (listRef.current) {
+			const itemElement = listRef.current.children[index];
+			if (itemElement) {
+				itemElement.scrollIntoView(true);
+			}
+		}
+	}
+	useEffect(() => {
+		scrollToItem(currentMatchIndex);
+	}, [currentMatchIndex]);
+
 	return (
 		<Drawer
 			sx={{
@@ -56,7 +69,7 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 		>
 			<Toolbar />
 			<Box sx={{ overflow: 'auto' }}>
-				<List disablePadding>
+				<List ref={listRef} disablePadding>
 					{matches.map((match, i) => (
 						<ListItem key={i} disablePadding sx={{ position: 'relative' }}>
 							<ListItemButton
