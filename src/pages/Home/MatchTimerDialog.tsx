@@ -29,6 +29,7 @@ type Props = {
 function MatchTimerDialog({ isOpen, onClose }: Props) {
 	const [isOpenMatchListDrawer, setIsOpenMatchListDrawer] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isLandscape, setIsLandscape] = useState(false);
 
 	const { resetTimer } = useTimer();
 	const { matches, currentMatchIndex, nextMatch, jumpMatch } = useMatches();
@@ -72,6 +73,30 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 		});
 	}, [matches, currentMatchIndex]);
 
+	function updateOrientation() {
+		switch (window.screen.orientation.type) {
+		case "portrait-primary":
+		case "portrait-secondary":
+			setIsLandscape(false);
+			setIsOpenMatchListDrawer(false);
+			break;
+
+		case 'landscape-primary':
+		case 'landscape-secondary':
+			setIsLandscape(true);
+			setIsOpenMatchListDrawer(true);
+			break;
+		}
+	}
+	useEffect(() => {
+		updateOrientation();
+		window.addEventListener("orientationchange", updateOrientation);
+
+		return () => {
+			window.removeEventListener("orientationchange", updateOrientation);
+		};
+	}, []);
+
 	return (
 		<Dialog
 			fullScreen
@@ -94,7 +119,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 						Timer{(matches.length > 0) && ' & Match'}
 					</Typography>
 
-					{(matches.length > 0) &&
+					{!((matches.length > 0) && isLandscape) &&
 					<IconButton
 						size="large"
 						edge="start"
@@ -112,11 +137,11 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 				</Toolbar>
 			</AppBar>
 
-			<MatchTimer />
+			<MatchTimer isDrawerOpened={(matches.length > 0) && isLandscape} />
 
 			<MatchListDrawer
 				width={drawerWidth}
-				isOpen={isOpenMatchListDrawer}
+				isOpen={(isOpenMatchListDrawer || isLandscape) && (matches.length > 0)}
 				onClose={handleCloseMatchListDrawer}
 			/>
 

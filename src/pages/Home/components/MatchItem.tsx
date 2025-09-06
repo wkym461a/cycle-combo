@@ -14,6 +14,12 @@ type Props = {
 	isContained: boolean,
 }
 
+const playerSx = {
+	width: '48px',
+	height: '40px',
+	fontSize: '40px',
+	fontWeight: 600,
+};
 function MatchItem({ match, scale, isContained }: Props) {
 	const appTheme = useTheme();
 	const theme = createTheme(
@@ -56,11 +62,7 @@ function MatchItem({ match, scale, isContained }: Props) {
 						variant={variant}
 						disabled
 						disableElevation
-						sx={{
-							width: '48px',
-							height: '40px',
-							fontSize: '18px'
-						}}
+						sx={playerSx}
 					>
 						{match[0][0]}
 					</Button>
@@ -68,11 +70,7 @@ function MatchItem({ match, scale, isContained }: Props) {
 						variant={variant}
 						disabled
 						disableElevation
-						sx={{
-							width: '48px',
-							height: '40px',
-							fontSize: '18px'
-						}}
+						sx={playerSx}
 					>
 						{match[0][1]}
 					</Button>
@@ -83,11 +81,7 @@ function MatchItem({ match, scale, isContained }: Props) {
 						variant={variant}
 						disabled
 						disableElevation
-						sx={{
-							width: '48px',
-							height: '40px',
-							fontSize: '18px'
-						}}
+						sx={playerSx}
 					>
 						{match[1][0]}
 					</Button>
@@ -95,11 +89,7 @@ function MatchItem({ match, scale, isContained }: Props) {
 						variant={variant}
 						disabled
 						disableElevation
-						sx={{
-							width: '48px',
-							height: '40px',
-							fontSize: '18px'
-						}}
+						sx={playerSx}
 					>
 						{match[1][1]}
 					</Button>

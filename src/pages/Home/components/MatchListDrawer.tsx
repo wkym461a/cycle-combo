@@ -58,43 +58,41 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 			<Box sx={{ overflow: 'auto' }}>
 				<List disablePadding>
 					{matches.map((match, i) => (
-						<>
-							<ListItem key={i} disablePadding sx={{ position: 'relative' }}>
-								<ListItemButton
-									onClick={() => handleModalOpen(i)}
-									sx={{ px: 0.5, py: 2, overflow: 'hidden' }}
+						<ListItem key={i} disablePadding sx={{ position: 'relative' }}>
+							<ListItemButton
+								onClick={() => handleModalOpen(i)}
+								sx={{ px: 0.5, py: 2, overflow: 'hidden' }}
+							>
+								<Backdrop
+									open={i < currentMatchIndex}
+									sx={(theme) => ({
+										position: 'absolute',
+										top: 0,
+										left: 0,
+										bottom: 0,
+										right: 0,
+										width: '100%',
+										height: '100%',
+										zIndex: theme.zIndex.drawer + 1,
+									})}
+									transitionDuration={500}
+								/>
+								<Stack
+									direction='row'
+									spacing={2}
+									sx={{
+										justifyContent: 'center',
+										alignItems: 'center',
+									}}
 								>
-									<Backdrop
-										open={i < currentMatchIndex}
-										sx={(theme) => ({
-											position: 'absolute',
-											top: 0,
-											left: 0,
-											bottom: 0,
-											right: 0,
-											width: '100%',
-											height: '100%',
-											zIndex: theme.zIndex.drawer + 1,
-										})}
-										transitionDuration={500}
+									<ListItemText
+										primary={`${i+1}.`}
+										sx={{ width: '31.75px', textAlign: 'right' }}
 									/>
-									<Stack
-										direction='row'
-										spacing={2}
-										sx={{
-											justifyContent: 'center',
-											alignItems: 'center',
-										}}
-									>
-										<ListItemText
-											primary={`${i+1}.`}
-											sx={{ width: '31.75px', textAlign: 'right' }}
-										/>
-										<MatchItem match={match} isContained={i === currentMatchIndex} scale={1} />
-									</Stack>
-								</ListItemButton>
-							</ListItem>
-						</>
+									<MatchItem match={match} isContained={i === currentMatchIndex} scale={1} />
+								</Stack>
+							</ListItemButton>
+						</ListItem>
 					))}
 				</List>
 			</Box>
