@@ -14,10 +14,12 @@ import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
+import ConfirmModal from "~/components/ConfirmModal";
 import MatchTimerDialog from './MatchTimerDialog';
 
 import { useTimer } from '~/contexts/timer';
 import { useMatches } from '~/contexts/matches';
+import { useAudio } from '~/contexts/audio';
 
 const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
 
@@ -30,12 +32,14 @@ const getCurrentRevision = (): string => {
 
 function Home() {
 	const [isOpenTimerDialog, setIsOpenTimerDialog] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const [timer_min, setTimer_min] = useState('3');
 	const [peopleNum, setPeopleNum] = useState('');
 
 	const { setInitTimer, startTimer, stopTimer, resetTimer } = useTimer();
 	const { createMatches, clearMatches } = useMatches();
+	const { resume, play } = useAudio();
 
 	function handleOpenTimerDialog() {
 		setInitTimer(Number(timer_min) * 60);
@@ -43,6 +47,8 @@ function Home() {
 		startTimer();
 
 		createMatches(Number(peopleNum));
+
+		resume();
 
 		setIsOpenTimerDialog(true);
 	}
@@ -60,6 +66,20 @@ function Home() {
   function handlePeopleNumChange(event: SelectChangeEvent) {
     setPeopleNum(event.target.value);
   };
+
+	function handleOpenModal() {
+		resume();
+
+		setIsModalOpen(true);
+	}
+	function handleModalClose() {
+		setIsModalOpen(false);
+	}
+	function handleConfirmClose() {
+		play();
+
+		setIsModalOpen(false);
+	}
 
   return (
 		<>
@@ -124,6 +144,13 @@ function Home() {
 							開始
 						</Button>
 
+						<Button
+							variant='text'
+							onClick={handleOpenModal}
+						>
+							音声テスト
+						</Button>
+
 						<Typography
 							component='div'
 						>
@@ -136,6 +163,14 @@ function Home() {
 			<MatchTimerDialog
 				isOpen={isOpenTimerDialog}
 				onClose={handleCloseTimerDialog}
+			/>
+
+			<ConfirmModal
+				isOpen={isModalOpen}
+				onClose={handleModalClose}
+				onConfirm={handleConfirmClose}
+				title='タイマ音を再生します'
+				description='iOSの場合、消音モードを解除してください。音が出ます。注意してください。'
 			/>
 		</>
   )

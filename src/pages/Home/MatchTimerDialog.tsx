@@ -9,15 +9,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
-import useSound from 'use-sound';
-import sound from '~/assets/timer.mp3';
-
 import ConfirmModal from "~/components/ConfirmModal";
 import MatchTimer from './components/MatchTimer';
 import MatchListDrawer from './components/MatchListDrawer';
 
 import { useTimer, setTimeoverAction } from '~/contexts/timer';
 import { useMatches } from '~/contexts/matches';
+import { useAudio } from '~/contexts/audio';
 
 const drawerWidth = 300;
 
@@ -34,7 +32,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 	const { resetTimer } = useTimer();
 	const { matches, currentMatchIndex, nextMatch, jumpMatch } = useMatches();
 
-	const [play] = useSound(sound);
+	const { play } = useAudio();
 
 	function handleClose() {
 		setIsOpenMatchListDrawer(false);
@@ -119,7 +117,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 						Timer{(matches.length > 0) && ' & Match'}
 					</Typography>
 
-					{!((matches.length > 0) && isLandscape) &&
+					{(matches.length > 0) && !isLandscape &&
 					<IconButton
 						size="large"
 						edge="start"

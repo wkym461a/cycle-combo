@@ -1,6 +1,7 @@
 import 'react';
 import { TimerProvider } from '~/contexts/timer';
 import { MatchesProvider } from '~/contexts/matches';
+import { AudioProvider } from '~/contexts/audio';
 import Home from '~/pages/Home';
 
 import { createTheme, ThemeProvider, useMediaQuery } from '@mui/material';
@@ -15,6 +16,7 @@ function App() {
 	});
 
   return (
+		<AudioProvider>
 		<TimerProvider>
 		<MatchesProvider>
 		<ThemeProvider theme={theme}>
@@ -23,6 +25,7 @@ function App() {
 		</ThemeProvider>
 		</MatchesProvider>
 		</TimerProvider>
+		</AudioProvider>
   )
 }
 
