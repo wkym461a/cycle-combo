@@ -10,12 +10,13 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/main'
-    concurrency:
-      group: pages-dev
-      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,9 +41,6 @@ jobs:
 
   deploy-prod:
     if: startsWith(github.ref, 'refs/tags/v')
-    concurrency:
-      group: pages-prod
-      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
