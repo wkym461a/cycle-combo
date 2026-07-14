@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { VitePWA } from 'vite-plugin-pwa';
 
+declare const process: { env: Record<string, string | undefined> };
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
