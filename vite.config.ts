@@ -44,7 +44,7 @@ export default defineConfig({
       }
 		}),
 	],
-  base: "/cycle-combo-dev/",
+  base: process.env.DEPLOY_BASE_PATH ?? "/cycle-combo/",
 	css: {
 		modules: {
 			localsConvention: 'dashes',

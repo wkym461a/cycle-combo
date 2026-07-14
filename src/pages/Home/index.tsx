@@ -26,9 +26,6 @@ const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
 const getCurrentVersion = (): string => {
 	return import.meta.env.VITE_VERSION;
 }
-const getCurrentRevision = (): string => {
-	return import.meta.env.VITE_REVISION;
-}
 
 function Home() {
 	const [isOpenTimerDialog, setIsOpenTimerDialog] = useState(false);
@@ -154,7 +151,7 @@ function Home() {
 						<Typography
 							component='div'
 						>
-							ver.{getCurrentVersion()} (r{getCurrentRevision()})
+							ver.{getCurrentVersion()}
 						</Typography>
 					</Stack>
 				</Container>
