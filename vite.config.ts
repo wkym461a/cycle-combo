@@ -18,6 +18,7 @@ export default defineConfig({
         name: 'バドミントン部タイマ',
         short_name: 'バド部タイマ',
         description: 'ダブルス競技向けインターバルタイマ',
+        lang: 'ja',
         theme_color: '#2c2c2c',
         icons: [
           {

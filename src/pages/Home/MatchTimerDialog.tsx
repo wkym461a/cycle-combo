@@ -71,20 +71,18 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 		});
 	}, [matches, currentMatchIndex]);
 
-	function updateOrientation() {
-		switch (window.screen.orientation.type) {
-		case "portrait-primary":
-		case "portrait-secondary":
-			setIsLandscape(false);
-			setIsOpenMatchListDrawer(false);
-			break;
-
-		case 'landscape-primary':
-		case 'landscape-secondary':
-			setIsLandscape(true);
-			setIsOpenMatchListDrawer(true);
-			break;
+	function isLandscapeOrientation(): boolean {
+		// iOS 16.4未満のSafariはscreen.orientationが未実装のため、
+		// matchMediaにフォールバックして例外による白画面化を防ぐ
+		if (window.screen.orientation) {
+			return window.screen.orientation.type.startsWith('landscape');
 		}
+		return window.matchMedia('(orientation: landscape)').matches;
+	}
+	function updateOrientation() {
+		const landscape = isLandscapeOrientation();
+		setIsLandscape(landscape);
+		setIsOpenMatchListDrawer(landscape);
 	}
 	useEffect(() => {
 		updateOrientation();
@@ -101,7 +99,7 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 			open={isOpen}
 			onClose={handleClose}
 		>
-			<AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+			<AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, pt: 'env(safe-area-inset-top)' }}>
 				<Toolbar>
 					<IconButton
 						size="large"

@@ -50,7 +50,7 @@ function MatchTimer({ isDrawerOpened }: Props) {
 
 			window.addEventListener('resize', handleResize);
 
-			const intervalID = window.setInterval(() => {console.log(`handleResize`); handleResize() }, 500);
+			const intervalID = window.setInterval(handleResize, 500);
 
 			return () => {
 				window.removeEventListener('resize', handleResize);

@@ -17,6 +17,9 @@ type Props = {
 const playerSx = {
 	width: '48px',
 	height: '40px',
+	minWidth: '48px',
+	padding: 0,
+	lineHeight: 1,
 	fontSize: '40px',
 	fontWeight: 600,
 };

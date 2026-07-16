@@ -81,7 +81,7 @@ function Home() {
   return (
 		<>
 			<Container maxWidth={false} disableGutters>
-				<AppBar position='sticky'>
+				<AppBar position='sticky' sx={{ pt: 'env(safe-area-inset-top)' }}>
 					<Toolbar>
 						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 							バドミントン部タイマ
