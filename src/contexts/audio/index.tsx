@@ -18,6 +18,10 @@ const SOUND_SOURCES: Record<SoundType, string> = {
 	bell: soundBell,
 };
 
+export const MIN_VOLUME = 0.5;
+export const MAX_VOLUME = 3;
+const DEFAULT_VOLUME = 1.5;
+
 const audioContext = new window.AudioContext();
 const audioData: Partial<Record<SoundType, AudioBuffer>> = {};
 (async () => {
@@ -27,16 +31,26 @@ const audioData: Partial<Record<SoundType, AudioBuffer>> = {};
 	}));
 })();
 
+// 100%(1.0)を超える音量までブーストできるようGainNodeを挟む。
+// ブースト時の歪み・クリッピングを抑えるためDynamicsCompressorNodeを後段に置く。
+const gainNode = audioContext.createGain();
+const compressorNode = audioContext.createDynamicsCompressor();
+gainNode.gain.value = DEFAULT_VOLUME;
+gainNode.connect(compressorNode);
+compressorNode.connect(audioContext.destination);
+
 // 状態の型
 type State = {
 	source: AudioBufferSourceNode | undefined,
 	soundType: SoundType,
+	volume: number,
 }
 
 // 状態の初期値
 const initialState: State = {
 	source: undefined,
 	soundType: 'chime',
+	volume: DEFAULT_VOLUME,
 }
 
 // 状態に対する操作の型
@@ -44,12 +58,14 @@ type Action =
 	| { type: 'play' }
 	| { type: 'resume' }
 	| { type: 'selectSound', soundType: SoundType }
+	| { type: 'setVolume', volume: number }
 
 // 外部公開する操作
 type ExtAction = {
 	play: () => void,
 	resume: () => void,
 	selectSound: (soundType: SoundType) => void,
+	setVolume: (volume: number) => void,
 }
 
 // コンテキスト型（状態と公開操作の組み合わせ）
@@ -62,7 +78,7 @@ const reducer = (state: State, action: Action): State => {
 		state.source?.disconnect();
 		const source = audioContext.createBufferSource();
 		source.buffer = audioData[state.soundType] ?? null;
-		source.connect(audioContext.destination);
+		source.connect(gainNode);
 		source.start(0);
 		return {
 			...state,
@@ -79,6 +95,14 @@ const reducer = (state: State, action: Action): State => {
 			soundType: action.soundType,
 		}
 	}
+	case 'setVolume': {
+		const volume = Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, action.volume));
+		gainNode.gain.value = volume;
+		return {
+			...state,
+			volume,
+		}
+	}
 	default:
 		return state;
 	}
@@ -89,6 +113,7 @@ const AudioContext = createContext<AudioContextType>({
 	play: () => {},
 	resume: () => {},
 	selectSound: () => {},
+	setVolume: () => {},
 });
 
 export const AudioProvider: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
@@ -98,12 +123,14 @@ export const AudioProvider: React.FC<PropsWithChildren> = (props: PropsWithChild
 	const play = () => dispatch({ type: 'play' });
 	const resume = () => dispatch({ type: 'resume' });
 	const selectSound = (soundType: SoundType) => dispatch({ type: 'selectSound', soundType });
+	const setVolume = (volume: number) => dispatch({ type: 'setVolume', volume });
 	const value = useMemo<AudioContextType>(
 		() => ({
 			...state,
 			play,
 			resume,
 			selectSound,
+			setVolume,
 		}),
 		[state],
 	);

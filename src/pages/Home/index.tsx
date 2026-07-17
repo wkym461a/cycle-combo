@@ -13,13 +13,14 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Slider from '@mui/material/Slider';
 
 import ConfirmModal from "~/components/ConfirmModal";
 import MatchTimerDialog from './MatchTimerDialog';
 
 import { useTimer } from '~/contexts/timer';
 import { useMatches } from '~/contexts/matches';
-import { useAudio, SOUND_TYPES, SOUND_TYPE_LABELS, SoundType } from '~/contexts/audio';
+import { useAudio, SOUND_TYPES, SOUND_TYPE_LABELS, SoundType, MIN_VOLUME, MAX_VOLUME } from '~/contexts/audio';
 import { useWakeLock } from '~/contexts/wakeLock';
 
 const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
@@ -37,7 +38,7 @@ function Home() {
 
 	const { setInitTimer, startTimer, stopTimer, resetTimer } = useTimer();
 	const { createMatches, clearMatches } = useMatches();
-	const { resume, play, soundType, selectSound } = useAudio();
+	const { resume, play, soundType, selectSound, volume, setVolume } = useAudio();
 	const { enableWakeLock, disableWakeLock } = useWakeLock();
 
 	function handleOpenTimerDialog() {
@@ -69,6 +70,9 @@ function Home() {
   };
   function handleSoundTypeChange(event: SelectChangeEvent) {
     selectSound(event.target.value as SoundType);
+  };
+  function handleVolumeChange(_event: Event, value: number | number[]) {
+    setVolume(value as number);
   };
 
 	function handleOpenModal() {
@@ -153,6 +157,21 @@ function Home() {
 									<MenuItem key={type} value={type}>{SOUND_TYPE_LABELS[type]}</MenuItem>
 								))}
 							</Select>
+						</FormControl>
+
+						<FormControl sx={{ width: '100%' }}>
+							<Typography id="label-slider-volume" gutterBottom>
+								音量 ({Math.round(volume * 100)}%)
+							</Typography>
+							<Slider
+								aria-labelledby="label-slider-volume"
+								value={volume}
+								min={MIN_VOLUME}
+								max={MAX_VOLUME}
+								step={0.1}
+								onChange={handleVolumeChange}
+								valueLabelDisplay="off"
+							/>
 						</FormControl>
 
 						<Button
