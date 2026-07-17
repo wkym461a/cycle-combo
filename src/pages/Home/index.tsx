@@ -19,7 +19,7 @@ import MatchTimerDialog from './MatchTimerDialog';
 
 import { useTimer } from '~/contexts/timer';
 import { useMatches } from '~/contexts/matches';
-import { useAudio } from '~/contexts/audio';
+import { useAudio, SOUND_TYPES, SOUND_TYPE_LABELS, SoundType } from '~/contexts/audio';
 
 const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
 
@@ -36,7 +36,7 @@ function Home() {
 
 	const { setInitTimer, startTimer, stopTimer, resetTimer } = useTimer();
 	const { createMatches, clearMatches } = useMatches();
-	const { resume, play } = useAudio();
+	const { resume, play, soundType, selectSound } = useAudio();
 
 	function handleOpenTimerDialog() {
 		setInitTimer(Number(timer_min) * 60);
@@ -62,6 +62,9 @@ function Home() {
   };
   function handlePeopleNumChange(event: SelectChangeEvent) {
     setPeopleNum(event.target.value);
+  };
+  function handleSoundTypeChange(event: SelectChangeEvent) {
+    selectSound(event.target.value as SoundType);
   };
 
 	function handleOpenModal() {
@@ -130,6 +133,21 @@ function Home() {
 								<MenuItem value={8}>8人</MenuItem>
 								<MenuItem value={9}>9人</MenuItem>
 								<MenuItem value={10}>10人</MenuItem>
+							</Select>
+						</FormControl>
+
+						<FormControl sx={{ width: '100%' }}>
+							<InputLabel id="label-select-sound-type">タイマー音</InputLabel>
+							<Select
+								labelId="label-select-sound-type"
+								id="select-sound-type"
+								value={soundType}
+								label="タイマー音"
+								onChange={handleSoundTypeChange}
+							>
+								{SOUND_TYPES.map(type => (
+									<MenuItem key={type} value={type}>{SOUND_TYPE_LABELS[type]}</MenuItem>
+								))}
 							</Select>
 						</FormControl>
 
