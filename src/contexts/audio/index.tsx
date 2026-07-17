@@ -2,6 +2,9 @@ import React, { createContext, PropsWithChildren, useContext, useMemo, useReduce
 import soundChime from '~/assets/timer.mp3';
 import soundBeep from '~/assets/sound-beep.wav';
 import soundBell from '~/assets/sound-bell.wav';
+import videoChime from '~/assets/sound-chime.mp4';
+import videoBeep from '~/assets/sound-beep.mp4';
+import videoBell from '~/assets/sound-bell.mp4';
 
 export const SOUND_TYPES = ['chime', 'beep', 'bell'] as const;
 export type SoundType = typeof SOUND_TYPES[number];
@@ -17,6 +20,35 @@ const SOUND_SOURCES: Record<SoundType, string> = {
 	beep: soundBeep,
 	bell: soundBell,
 };
+
+// iOSは<video>要素の音声にはサイレントスイッチ(消音モード)が効かない仕様のため、
+// 同じ音を映像付きmp4としても用意し、Web Audio再生と同時に鳴らすことで
+// 消音モードでも確実に聞こえるようにする（各mp4は各音源から生成した映像+音声）。
+const VIDEO_SOURCES: Record<SoundType, string> = {
+	chime: videoChime,
+	beep: videoBeep,
+	bell: videoBell,
+};
+
+const silentModeVideo = document.createElement('video');
+silentModeVideo.setAttribute('playsinline', '');
+silentModeVideo.style.position = 'fixed';
+silentModeVideo.style.width = '1px';
+silentModeVideo.style.height = '1px';
+silentModeVideo.style.opacity = '0';
+silentModeVideo.style.pointerEvents = 'none';
+let silentModeVideoSoundType: SoundType = 'chime';
+silentModeVideo.src = VIDEO_SOURCES[silentModeVideoSoundType];
+document.body.appendChild(silentModeVideo);
+
+function playSilentModeVideo(soundType: SoundType) {
+	if (silentModeVideoSoundType !== soundType) {
+		silentModeVideo.src = VIDEO_SOURCES[soundType];
+		silentModeVideoSoundType = soundType;
+	}
+	silentModeVideo.currentTime = 0;
+	silentModeVideo.play().catch(() => {});
+}
 
 export const MIN_VOLUME = 0.5;
 export const MAX_VOLUME = 3;
@@ -80,6 +112,7 @@ const reducer = (state: State, action: Action): State => {
 		source.buffer = audioData[state.soundType] ?? null;
 		source.connect(gainNode);
 		source.start(0);
+		playSilentModeVideo(state.soundType);
 		return {
 			...state,
 			source,
@@ -87,6 +120,9 @@ const reducer = (state: State, action: Action): State => {
 	}
 	case 'resume': {
 		audioContext.resume();
+		// iOSでは<video>の再生をユーザー操作の文脈で一度行っておかないと、
+		// タイマー終了時（ユーザー操作を伴わないコールバック）からの再生が許可されない。
+		silentModeVideo.play().then(() => silentModeVideo.pause()).catch(() => {});
 		return state;
 	}
 	case 'selectSound': {
