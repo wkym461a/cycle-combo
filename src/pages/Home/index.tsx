@@ -20,6 +20,7 @@ import MatchTimerDialog from './MatchTimerDialog';
 import { useTimer } from '~/contexts/timer';
 import { useMatches } from '~/contexts/matches';
 import { useAudio, SOUND_TYPES, SOUND_TYPE_LABELS, SoundType } from '~/contexts/audio';
+import { useWakeLock } from '~/contexts/wakeLock';
 
 const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
 
@@ -37,6 +38,7 @@ function Home() {
 	const { setInitTimer, startTimer, stopTimer, resetTimer } = useTimer();
 	const { createMatches, clearMatches } = useMatches();
 	const { resume, play, soundType, selectSound } = useAudio();
+	const { enableWakeLock, disableWakeLock } = useWakeLock();
 
 	function handleOpenTimerDialog() {
 		setInitTimer(Number(timer_min) * 60);
@@ -46,6 +48,7 @@ function Home() {
 		createMatches(Number(peopleNum));
 
 		resume();
+		enableWakeLock();
 
 		setIsOpenTimerDialog(true);
 	}
@@ -55,6 +58,7 @@ function Home() {
 		clearMatches();
 
 		stopTimer();
+		disableWakeLock();
 	}
 
   function handleTimerChange(event: SelectChangeEvent) {
