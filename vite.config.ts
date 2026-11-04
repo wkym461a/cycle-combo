@@ -8,6 +8,9 @@ declare const process: { env: Record<string, string | undefined> };
 // main push → /cycle-combo/dev/、vX.Y.Z タグ push → /cycle-combo/（.github/workflows/deploy-gh-pages.yml）
 const base = process.env.DEPLOY_BASE_PATH ?? "/cycle-combo/";
 
+// 開発版（dev/ 配信）か本番かをアプリに埋め込む。ホーム画面のバージョン表記で「開発版」ラベルを出すのに使う
+const deployChannel: 'dev' | 'prod' = base === "/cycle-combo/dev/" ? 'dev' : 'prod';
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -59,6 +62,9 @@ export default defineConfig({
 		}),
 	],
   base,
+  define: {
+    'import.meta.env.VITE_DEPLOY_CHANNEL': JSON.stringify(deployChannel),
+  },
 	css: {
 		modules: {
 			localsConvention: 'dashes',
