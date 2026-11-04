@@ -10,6 +10,7 @@ import QrCode2Icon from '@mui/icons-material/QrCode2';
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -35,6 +36,9 @@ const DEFAULT_TIMER_MIN = 3;
 const getCurrentVersion = (): string => {
 	return import.meta.env.VITE_VERSION;
 }
+
+// 開発版（/cycle-combo/dev/ 配信）か。利用者はバージョン番号を意識しないので、番号とは別に明示的なラベルで示す
+const IS_DEV_CHANNEL = import.meta.env.VITE_DEPLOY_CHANNEL === 'dev';
 
 function restoreTimerMin(): number {
 	const value = loadSettings().timerMin;
@@ -222,11 +226,14 @@ function Home() {
 							音声テスト
 						</Button>
 
-						<Typography
-							component='div'
-						>
-							ver.{getCurrentVersion()}
-						</Typography>
+						<Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+							<Typography component='div'>
+								ver.{getCurrentVersion()}
+							</Typography>
+							{IS_DEV_CHANNEL &&
+							<Chip label="開発版" size="small" color="warning" />
+							}
+						</Stack>
 					</Stack>
 				</Container>
 			</Container>
