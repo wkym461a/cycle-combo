@@ -12,7 +12,7 @@ import { useConfirm } from "~/hooks/useConfirm";
 import { useFitScale } from "~/hooks/useFitScale";
 
 type Props = {
-	/** 右側に常時表示されるドロワーの幅（表示されていなければ 0） */
+	/** 右側に常時表示されるドロワーの幅（px、セーフエリア分を除く。表示されていなければ 0） */
 	reservedRightWidth: number,
 }
 
@@ -50,7 +50,8 @@ function MatchTimer({ reservedRightWidth }: Props) {
 	return (
 		<Box
 			ref={ref}
-			width={(reservedRightWidth > 0) ? `calc(100% - ${reservedRightWidth}px)` : '100%'}
+			// ドロワーは右セーフエリア分だけ広く描かれる（MatchListDrawer）ので、その分も差し引く
+			width={(reservedRightWidth > 0) ? `calc(100% - ${reservedRightWidth}px - env(safe-area-inset-right))` : '100%'}
 			height='100%'
 			sx={{
 				overflow: 'hidden',
