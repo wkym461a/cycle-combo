@@ -13,6 +13,7 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 import MatchTimer from './components/MatchTimer';
 import MatchListDrawer from './components/MatchListDrawer';
+import Clock from './components/Clock';
 
 import { useTimerState } from '~/contexts/timer';
 import { useMatchesActions, useMatchesState } from '~/contexts/matches';
@@ -97,6 +98,9 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 					<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
 						Timer{hasMatches && ' & Match'}
 					</Typography>
+
+					{/* iOS の横向きではステータスバーが出ず時刻が見えないので、ヘッダ右側に時計を出す */}
+					{isLandscape && <Clock />}
 
 					{hasMatches && !isLandscape &&
 					<IconButton
