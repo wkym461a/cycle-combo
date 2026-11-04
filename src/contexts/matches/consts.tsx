@@ -215,3 +215,11 @@ export const MatchLists: Match[][] = [
 	matchList9,
 	matchList10,
 ];
+
+export const MIN_PEOPLE_NUM = 4;
+export const PEOPLE_NUM_OPTIONS: number[] = MatchLists.map((_, i) => i + MIN_PEOPLE_NUM);
+
+// 人数に対応する組み合わせ表。範囲外なら空配列。
+export function getMatchList(peopleNum: number): Match[] {
+	return MatchLists[peopleNum - MIN_PEOPLE_NUM] ?? [];
+}

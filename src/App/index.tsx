@@ -1,4 +1,4 @@
-import 'react';
+import { useMemo } from 'react';
 import { TimerProvider } from '~/contexts/timer';
 import { MatchesProvider } from '~/contexts/matches';
 import { AudioProvider } from '~/contexts/audio';
@@ -10,13 +10,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 function App() {
 	const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-	const theme = createTheme({
+	const theme = useMemo(() => createTheme({
 		palette: {
 			mode: isDarkMode ? 'dark' : 'light',
 		},
-	});
+	}), [isDarkMode]);
 
-  return (
+	return (
 		<AudioProvider>
 		<WakeLockProvider>
 		<TimerProvider>
@@ -29,7 +29,7 @@ function App() {
 		</TimerProvider>
 		</WakeLockProvider>
 		</AudioProvider>
-  )
+	)
 }
 
 export default App;
