@@ -5,6 +5,8 @@ import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
@@ -17,6 +19,7 @@ import Slider from '@mui/material/Slider';
 
 import MatchTimerDialog from './MatchTimerDialog';
 import UpdatePrompt from '~/components/UpdatePrompt';
+import DeployLinksDialog from '~/components/DeployLinksDialog';
 
 import { useTimerActions } from '~/contexts/timer';
 import { useMatchesActions } from '~/contexts/matches';
@@ -45,6 +48,7 @@ function restorePeopleNum(): number {
 function Home() {
 	// リロード前にタイマー実行中だったなら、そのまま実行画面に戻る（タイマー・試合組の状態も各 Provider が復元する）
 	const [isOpenTimerDialog, setIsOpenTimerDialog] = useState(loadSessionActive);
+	const [isOpenDeployLinks, setIsOpenDeployLinks] = useState(false);
 
 	const [timerMin, setTimerMin] = useState(restoreTimerMin);
 	const [peopleNum, setPeopleNum] = useState(restorePeopleNum);
@@ -120,6 +124,14 @@ function Home() {
 						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 							バドミントン部タイマ
 						</Typography>
+						<IconButton
+							edge="end"
+							color="inherit"
+							aria-label="配信先のリンクを表示"
+							onClick={() => setIsOpenDeployLinks(true)}
+						>
+							<QrCode2Icon />
+						</IconButton>
 					</Toolbar>
 				</AppBar>
 
@@ -222,6 +234,11 @@ function Home() {
 			<MatchTimerDialog
 				isOpen={isOpenTimerDialog}
 				onClose={handleCloseTimerDialog}
+			/>
+
+			<DeployLinksDialog
+				isOpen={isOpenDeployLinks}
+				onClose={() => setIsOpenDeployLinks(false)}
 			/>
 
 			{confirmDialog}
