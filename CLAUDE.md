@@ -62,6 +62,7 @@ src/
   lib/
     storage.ts             # localStorage の安全な読み書き
     settings.ts            # 設定値とセッション有無の保存・復元
+    deployUrls.ts          # 本番/開発の配信先URL（QR表示用）
   pages/Home/
     index.tsx               # トップ画面（設定、開始ボタン、音声テスト、更新通知）
     MatchTimerDialog.tsx     # フルスクリーンのタイマー実行画面（laps→試合組進行→音）
@@ -72,6 +73,7 @@ src/
   components/
     ConfirmModal.tsx         # 汎用確認モーダル（表示のみ）
     UpdatePrompt.tsx         # PWA更新通知
+    DeployLinksDialog.tsx    # 本番/開発URLのQRコード表示（ホーム画面右上のQRアイコンから）
 ```
 
 ## コマンド
