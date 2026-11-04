@@ -5,13 +5,17 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 declare const process: { env: Record<string, string | undefined> };
 
+// main push → /cycle-combo/dev/、vX.Y.Z タグ push → /cycle-combo/（.github/workflows/deploy-gh-pages.yml）
+const base = process.env.DEPLOY_BASE_PATH ?? "/cycle-combo/";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
 		react(),
 		tsconfigPaths(),
 		VitePWA({
-      registerType: 'autoUpdate',
+      // 新バージョンは自動リロードせず、ユーザー操作で更新する（タイマー実行中のリロードを防ぐ。src/components/UpdatePrompt.tsx）
+      registerType: 'prompt',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       injectRegister: 'auto',
       manifest: {
@@ -19,7 +23,14 @@ export default defineConfig({
         short_name: 'バド部タイマ',
         description: 'ダブルス競技向けインターバルタイマ',
         lang: 'ja',
+        // dev/ とルートで2つの Service Worker が同居するため、scope と start_url を base に揃えて明示する
+        id: base,
+        scope: base,
+        start_url: base,
+        display: 'standalone',
+        orientation: 'any',
         theme_color: '#2c2c2c',
+        background_color: '#2c2c2c',
         icons: [
           {
             src: 'web-app-manifest-192x192.png',
@@ -47,7 +58,7 @@ export default defineConfig({
       }
 		}),
 	],
-  base: process.env.DEPLOY_BASE_PATH ?? "/cycle-combo/",
+  base,
 	css: {
 		modules: {
 			localsConvention: 'dashes',

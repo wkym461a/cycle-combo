@@ -15,84 +15,107 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Slider from '@mui/material/Slider';
 
-import ConfirmModal from "~/components/ConfirmModal";
 import MatchTimerDialog from './MatchTimerDialog';
+import UpdatePrompt from '~/components/UpdatePrompt';
 
-import { useTimer } from '~/contexts/timer';
-import { useMatches } from '~/contexts/matches';
-import { useAudio, SOUND_TYPES, SOUND_TYPE_LABELS, SoundType, MIN_VOLUME, MAX_VOLUME } from '~/contexts/audio';
+import { useTimerActions } from '~/contexts/timer';
+import { useMatchesActions } from '~/contexts/matches';
+import { PEOPLE_NUM_OPTIONS } from '~/contexts/matches/consts';
+import { useAudioActions, useAudioState, SOUND_TYPES, SOUND_TYPE_LABELS, SoundType, MIN_VOLUME, MAX_VOLUME } from '~/contexts/audio';
 import { useWakeLock } from '~/contexts/wakeLock';
+import { useConfirm } from '~/hooks/useConfirm';
+import { loadSessionActive, loadSettings, saveSessionActive, updateSettings } from '~/lib/settings';
 
 const TIMER_SELECT_LIST = [...Array(10)].map((_, i) => i+1);
+const DEFAULT_TIMER_MIN = 3;
 
 const getCurrentVersion = (): string => {
 	return import.meta.env.VITE_VERSION;
 }
 
+function restoreTimerMin(): number {
+	const value = loadSettings().timerMin;
+	return (typeof value === 'number' && TIMER_SELECT_LIST.includes(value)) ? value : DEFAULT_TIMER_MIN;
+}
+function restorePeopleNum(): number {
+	const value = loadSettings().peopleNum;
+	return (typeof value === 'number' && PEOPLE_NUM_OPTIONS.includes(value)) ? value : 0;
+}
+
 function Home() {
-	const [isOpenTimerDialog, setIsOpenTimerDialog] = useState(false);
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	// リロード前にタイマー実行中だったなら、そのまま実行画面に戻る（タイマー・試合組の状態も各 Provider が復元する）
+	const [isOpenTimerDialog, setIsOpenTimerDialog] = useState(loadSessionActive);
 
-	const [timer_min, setTimer_min] = useState('3');
-	const [peopleNum, setPeopleNum] = useState('');
+	const [timerMin, setTimerMin] = useState(restoreTimerMin);
+	const [peopleNum, setPeopleNum] = useState(restorePeopleNum);
 
-	const { setInitTimer, startTimer, stopTimer, resetTimer } = useTimer();
-	const { createMatches, clearMatches } = useMatches();
-	const { resume, play, soundType, selectSound, volume, setVolume } = useAudio();
+	const { beginTimer, endTimer } = useTimerActions();
+	const { createMatches, clearMatches } = useMatchesActions();
+	const { soundType, volume, isReady } = useAudioState();
+	const { activateSession, deactivateSession, playTest, selectSound, setVolume } = useAudioActions();
 	const { enableWakeLock, disableWakeLock } = useWakeLock();
+	const { confirm, confirmDialog } = useConfirm();
 
 	function handleOpenTimerDialog() {
-		setInitTimer(Number(timer_min) * 60);
-		resetTimer();
-		startTimer();
-
-		createMatches(Number(peopleNum));
-
-		resume();
+		// 音声の解放と WakeLock はユーザー操作（このクリック）の文脈で行う必要がある
+		void activateSession();
 		enableWakeLock();
 
+		beginTimer(timerMin * 60 * 1000);
+		createMatches(peopleNum);
+
+		saveSessionActive(true);
 		setIsOpenTimerDialog(true);
 	}
 	function handleCloseTimerDialog() {
+		saveSessionActive(false);
 		setIsOpenTimerDialog(false);
 
 		clearMatches();
+		endTimer();
 
-		stopTimer();
+		deactivateSession();
 		disableWakeLock();
 	}
 
-  function handleTimerChange(event: SelectChangeEvent) {
-    setTimer_min(event.target.value);
-  };
-  function handlePeopleNumChange(event: SelectChangeEvent) {
-    setPeopleNum(event.target.value);
-  };
-  function handleSoundTypeChange(event: SelectChangeEvent) {
-    selectSound(event.target.value as SoundType);
-  };
-  function handleVolumeChange(_event: Event, value: number | number[]) {
-    setVolume(value as number);
-  };
-
-	function handleOpenModal() {
-		resume();
-
-		setIsModalOpen(true);
+	function handleTimerChange(event: SelectChangeEvent<number>) {
+		const value = Number(event.target.value);
+		setTimerMin(value);
+		updateSettings({ timerMin: value });
 	}
-	function handleModalClose() {
-		setIsModalOpen(false);
+	function handlePeopleNumChange(event: SelectChangeEvent<number>) {
+		const value = Number(event.target.value);
+		setPeopleNum(value);
+		updateSettings({ peopleNum: value });
 	}
-	function handleConfirmClose() {
-		play();
-
-		setIsModalOpen(false);
+	function handleSoundTypeChange(event: SelectChangeEvent) {
+		selectSound(event.target.value as SoundType);
+	}
+	function handleVolumeChange(_event: Event, value: number | number[]) {
+		setVolume(value as number);
 	}
 
-  return (
+	async function handleSoundTest() {
+		const ok = await confirm({
+			title: 'タイマ音を再生します',
+			description: '音が出ます。音量に注意してください。',
+		});
+		if (ok) {
+			void playTest();
+		}
+	}
+
+	return (
 		<>
 			<Container maxWidth={false} disableGutters>
-				<AppBar position='sticky' sx={{ pt: 'env(safe-area-inset-top)' }}>
+				<AppBar
+					position='sticky'
+					sx={{
+						pt: 'env(safe-area-inset-top)',
+						pl: 'env(safe-area-inset-left)',
+						pr: 'env(safe-area-inset-right)',
+					}}
+				>
 					<Toolbar>
 						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 							バドミントン部タイマ
@@ -100,7 +123,7 @@ function Home() {
 					</Toolbar>
 				</AppBar>
 
-				<Container maxWidth='sm'>
+				<Container maxWidth='sm' sx={{ pb: 'env(safe-area-inset-bottom)' }}>
 					<Stack
 						spacing={8}
 						mt={8}
@@ -114,7 +137,7 @@ function Home() {
 							<Select
 								labelId="label-select-timer-min"
 								id="select-timer-min"
-								value={timer_min}
+								value={timerMin}
 								label="タイマ"
 								onChange={handleTimerChange}
 							>
@@ -133,14 +156,10 @@ function Home() {
 								label="人数"
 								onChange={handlePeopleNumChange}
 							>
-								<MenuItem value="">なし</MenuItem>
-								<MenuItem value={4}>4人</MenuItem>
-								<MenuItem value={5}>5人</MenuItem>
-								<MenuItem value={6}>6人</MenuItem>
-								<MenuItem value={7}>7人</MenuItem>
-								<MenuItem value={8}>8人</MenuItem>
-								<MenuItem value={9}>9人</MenuItem>
-								<MenuItem value={10}>10人</MenuItem>
+								<MenuItem value={0}>なし</MenuItem>
+								{PEOPLE_NUM_OPTIONS.map(n => (
+									<MenuItem key={n} value={n}>{n}人</MenuItem>
+								))}
 							</Select>
 						</FormControl>
 
@@ -177,14 +196,16 @@ function Home() {
 						<Button
 							fullWidth
 							variant='contained'
+							disabled={!isReady}
 							onClick={handleOpenTimerDialog}
 						>
-							開始
+							{isReady ? '開始' : '音源を読み込み中…'}
 						</Button>
 
 						<Button
 							variant='text'
-							onClick={handleOpenModal}
+							disabled={!isReady}
+							onClick={handleSoundTest}
 						>
 							音声テスト
 						</Button>
@@ -203,15 +224,11 @@ function Home() {
 				onClose={handleCloseTimerDialog}
 			/>
 
-			<ConfirmModal
-				isOpen={isModalOpen}
-				onClose={handleModalClose}
-				onConfirm={handleConfirmClose}
-				title='タイマ音を再生します'
-				description='iOSの場合、消音モードを解除してください。音が出ます。注意してください。'
-			/>
+			{confirmDialog}
+
+			<UpdatePrompt suppressed={isOpenTimerDialog} />
 		</>
-  )
+	)
 }
 
 export default Home;

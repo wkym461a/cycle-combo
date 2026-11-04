@@ -1,4 +1,5 @@
-import React, { createContext, PropsWithChildren, useContext, useRef } from "react";
+/* eslint-disable react-refresh/only-export-components -- Provider と hooks を同じファイルで公開する */
+import React, { createContext, PropsWithChildren, useContext, useMemo, useRef } from "react";
 import NoSleep from 'nosleep.js';
 
 // 外部公開する操作
@@ -7,40 +8,28 @@ type WakeLockContextType = {
 	disableWakeLock: () => void,
 }
 
-const WakeLockContext = createContext<WakeLockContextType>({
-	enableWakeLock: () => {},
-	disableWakeLock: () => {},
-});
+const WakeLockContext = createContext<WakeLockContextType | undefined>(undefined);
 
-export const WakeLockProvider: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
+export const WakeLockProvider: React.FC<PropsWithChildren> = ({ children }) => {
 	const noSleepRef = useRef<NoSleep>();
 	if (!noSleepRef.current) {
 		noSleepRef.current = new NoSleep();
 	}
 
-	// ユーザー操作（開始ボタン押下）のコールバック内から呼ぶ必要がある
-	// （iOSではユーザー操作なしのvideo再生・Wake Lock取得が許可されないため）
-	function enableWakeLock() {
-		noSleepRef.current?.enable().catch(() => {});
-	}
-	function disableWakeLock() {
-		noSleepRef.current?.disable();
-	}
+	const value = useMemo<WakeLockContextType>(() => ({
+		// ユーザー操作（開始ボタン押下）のコールバック内から呼ぶ必要がある
+		// （iOSではユーザー操作なしのvideo再生・Wake Lock取得が許可されないため）
+		enableWakeLock: () => { noSleepRef.current?.enable().catch(() => {}); },
+		disableWakeLock: () => { noSleepRef.current?.disable(); },
+	}), []);
 
-	const value: WakeLockContextType = {
-		enableWakeLock,
-		disableWakeLock,
-	};
-
-	return <WakeLockContext.Provider value={value} {...props} />;
+	return <WakeLockContext.Provider value={value}>{children}</WakeLockContext.Provider>;
 }
 
 export const useWakeLock = () => {
 	const context = useContext(WakeLockContext);
-
-  if (typeof context === 'undefined') {
-    throw new Error('useWakeLock must be within a WakeLockProvider');
-  }
-
-  return context;
+	if (context === undefined) {
+		throw new Error('useWakeLock must be within a WakeLockProvider');
+	}
+	return context;
 }

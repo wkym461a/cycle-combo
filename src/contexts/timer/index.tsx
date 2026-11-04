@@ -1,139 +1,116 @@
+/* eslint-disable react-refresh/only-export-components -- Provider と hooks を同じファイルで公開する */
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from "react";
+import { loadJson, saveJson, STORAGE_KEYS } from "~/lib/storage";
+import { initialState, reducer, TimerState, toSec } from "./reducer";
 
-let timeoverAction: () => void = () => console.log(`Timer: timeover action`);
-export function setTimeoverAction(action: () => void) {
-	timeoverAction = action;
-}
-
-// 状態の型
-type State = {
-	initTimer_s: number,
-	timer_s: number,
-	isRunning: boolean,
-}
-
-// 状態の初期値
-const initialState: State = {
-	initTimer_s: 0,
-	timer_s: 0,
-	isRunning: false,
-}
-
-// 状態に対する操作の型
-type Action =
-	| { type: 'countdown' }
-	| { type: 'set-init', initTimer_s: number }
-	| { type: 'start' }
-	| { type: 'stop' }
-	| { type: 'reset' }
+export type { TimerState } from "./reducer";
 
 // 外部公開する操作
-type ExtAction = {
-	setInitTimer: (initTimer_s: number) => void,
+type TimerActions = {
+	beginTimer: (durationMs: number) => void,
+	endTimer: () => void,
 	startTimer: () => void,
-	stopTimer: () => void,
+	pauseTimer: () => void,
 	resetTimer: () => void,
 }
 
-// コンテキスト型（状態と公開操作の組み合わせ）
-type TimerContextType = State & ExtAction;
+// 外部公開する状態（表示用の残り秒数を付加）
+type TimerStateValue = TimerState & {
+	remainingSec: number,
+}
 
-const reducer = (state: State, action: Action): State => {
-	switch (action.type) {
-	case 'countdown':
-		return {
-			...state,
-			timer_s: Math.max(state.timer_s - 1, 0),
-		}
-	case 'set-init':
-		return {
-			...state,
-			initTimer_s: action.initTimer_s,
-			timer_s: action.initTimer_s,
-		}
-	case 'start':
-		return {
-			...state,
-			isRunning: true,
-		}
-	case 'stop':
-		return {
-			...state,
-			isRunning: false,
-		}
-	case 'reset':
-		return {
-			...state,
-			timer_s: state.initTimer_s,
-		}
-	default:
-		return state;
+const TICK_INTERVAL_MS = 250;
+
+function restoreState(): TimerState {
+	const saved = loadJson<TimerState>(STORAGE_KEYS.timer);
+	if (
+		saved &&
+		typeof saved.durationMs === 'number' && saved.durationMs > 0 &&
+		typeof saved.remainingMs === 'number' &&
+		(saved.endAt === null || typeof saved.endAt === 'number') &&
+		typeof saved.isRunning === 'boolean' &&
+		typeof saved.laps === 'number'
+	) {
+		return saved;
 	}
+	return initialState;
 }
 
-const TimerContext = createContext<TimerContextType>({
-	...initialState,
-	setInitTimer: (_: number) => {},
-	startTimer: () => {},
-	stopTimer: () => {},
-	resetTimer: () => {},
-});
+const TimerStateContext = createContext<TimerStateValue | undefined>(undefined);
+const TimerActionsContext = createContext<TimerActions | undefined>(undefined);
 
-let timeoutID: number | undefined = undefined;
-export const TimerProvider: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
-	const [state, dispatch] = useReducer(reducer, initialState);
+export const TimerProvider: React.FC<PropsWithChildren> = ({ children }) => {
+	const [state, dispatch] = useReducer(reducer, undefined, restoreState);
 
-	// コンテキストのインスタンス生成
-	const setInitTimer = (initTimer_s: number) => dispatch({ type: 'set-init', initTimer_s });
-	const startTimer = () => dispatch({ type: 'start' });
-	const stopTimer = () => dispatch({ type: 'stop' });
-	const resetTimer = () => dispatch({ type: 'reset' });
-	const value = useMemo<TimerContextType>(
-		() => ({
-			...state,
-			setInitTimer,
-			startTimer,
-			stopTimer,
-			resetTimer,
-		}),
-		[state],
-	);
+	// 操作は dispatch にしか依存しないので一度だけ生成する
+	const actions = useMemo<TimerActions>(() => ({
+		beginTimer: (durationMs) => dispatch({ type: 'begin', durationMs, now: Date.now() }),
+		endTimer: () => dispatch({ type: 'end' }),
+		startTimer: () => dispatch({ type: 'start', now: Date.now() }),
+		pauseTimer: () => dispatch({ type: 'pause', now: Date.now() }),
+		resetTimer: () => dispatch({ type: 'reset', now: Date.now() }),
+	}), []);
 
-	// カウントダウン処理
-	const countdownTimer = () => dispatch({ type: 'countdown' });
+	// 走行中は定期的に、またページが前面に戻ったときに即座に残り時間を再計算する
 	useEffect(() => {
-		if (
-			(state.initTimer_s <= 0) ||
-			(!state.isRunning) ||
-			(state.timer_s <= 0)
-		) {
-			window.clearTimeout(timeoutID);
-			timeoutID = undefined;
-			return;
+		if (!state.isRunning) return;
+
+		const tick = () => dispatch({ type: 'tick', now: Date.now() });
+		const onVisibilityChange = () => {
+			if (document.visibilityState === 'visible') tick();
+		};
+
+		tick();
+		const intervalID = window.setInterval(tick, TICK_INTERVAL_MS);
+		document.addEventListener('visibilitychange', onVisibilityChange);
+		window.addEventListener('pageshow', tick);
+		window.addEventListener('focus', tick);
+
+		return () => {
+			window.clearInterval(intervalID);
+			document.removeEventListener('visibilitychange', onVisibilityChange);
+			window.removeEventListener('pageshow', tick);
+			window.removeEventListener('focus', tick);
+		};
+	}, [state.isRunning]);
+
+	// 永続化（毎秒の tick では endAt が変わらないので書き込みは起きない）
+	useEffect(() => {
+		if (state.durationMs <= 0) {
+			saveJson(STORAGE_KEYS.timer, null);
+		} else {
+			saveJson(STORAGE_KEYS.timer, state);
 		}
+		// remainingMs は停止時（isRunning の変化時）に確定するので依存に含めなくてよい
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [state.durationMs, state.endAt, state.isRunning, state.laps]);
 
-		// タイマカウントダウン設定
-		window.clearTimeout(timeoutID);
-		timeoutID = window.setTimeout(() => {
-			countdownTimer();
+	const stateValue = useMemo<TimerStateValue>(() => ({
+		...state,
+		remainingSec: toSec(state.remainingMs),
+	}), [state]);
 
-			if (state.timer_s <= 1) {
-				resetTimer();
-				timeoverAction();
-			}
-		}, 1000);
-
-	}, [state]);
-
-	return <TimerContext.Provider value={value} {...props} />;
+	return (
+		<TimerActionsContext.Provider value={actions}>
+			<TimerStateContext.Provider value={stateValue}>
+				{children}
+			</TimerStateContext.Provider>
+		</TimerActionsContext.Provider>
+	);
 }
 
-export const useTimer = () => {
-	const context = useContext(TimerContext);
+export const useTimerState = () => {
+	const context = useContext(TimerStateContext);
+	if (context === undefined) {
+		throw new Error('useTimerState must be within a TimerProvider');
+	}
+	return context;
+}
 
-  if (typeof context === 'undefined') {
-    throw new Error('useTimer must be within a TimerProvider');
-  }
-
-  return context;
+export const useTimerActions = () => {
+	const context = useContext(TimerActionsContext);
+	if (context === undefined) {
+		throw new Error('useTimerActions must be within a TimerProvider');
+	}
+	return context;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,11 +10,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Backdrop from '@mui/material/Backdrop';
 import Stack from '@mui/material/Stack';
 
-import ConfirmModal from "~/components/ConfirmModal";
 import MatchItem from "./MatchItem";
 
-import { useTimer } from '~/contexts/timer';
-import { useMatches } from '~/contexts/matches';
+import { useTimerActions } from '~/contexts/timer';
+import { useMatchesActions, useMatchesState } from '~/contexts/matches';
+import { useConfirm } from '~/hooks/useConfirm';
 
 type Props = {
 	width: number,
@@ -23,36 +23,25 @@ type Props = {
 }
 
 function MatchListDrawer({ width, isOpen, onClose }: Props) {
-	const { resetTimer } = useTimer();
-	const { matches, currentMatchIndex, jumpMatch } = useMatches();
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [destMatchIndex, setDestMatchIndex] = useState(0);
+	const { resetTimer } = useTimerActions();
+	const { matches, currentMatchIndex } = useMatchesState();
+	const { jumpMatch } = useMatchesActions();
+	const { confirm, confirmDialog } = useConfirm();
 	const listRef = useRef<HTMLUListElement>(null);
 
-	function handleModalOpen(matchIndex: number) {
-		setIsModalOpen(true);
-		setDestMatchIndex(matchIndex);
-	}
-	function handleModalClose() {
-		setIsModalOpen(false);
-	}
-	function handleConfirmJumpMatch() {
-		setIsModalOpen(false);
+	async function handleSelect(matchIndex: number) {
+		const ok = await confirm({
+			title: `${matchIndex + 1}番目の試合から開始します`,
+			description: 'タイマもリセットされます',
+		});
+		if (!ok) return;
 		resetTimer();
-		jumpMatch(destMatchIndex);
+		jumpMatch(matchIndex);
 		onClose();
 	}
 
-	function scrollToItem(index: number) {
-		if (listRef.current) {
-			const itemElement = listRef.current.children[index];
-			if (itemElement) {
-				itemElement.scrollIntoView(true);
-			}
-		}
-	}
 	useEffect(() => {
-		scrollToItem(currentMatchIndex);
+		listRef.current?.children[currentMatchIndex]?.scrollIntoView(true);
 	}, [currentMatchIndex]);
 
 	return (
@@ -60,7 +49,12 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 			sx={{
 				width: width,
 				flexShrink: 0,
-				[`& .MuiDrawer-paper`]: { width: width, boxSizing: 'border-box' },
+				[`& .MuiDrawer-paper`]: {
+					width: width,
+					boxSizing: 'border-box',
+					pr: 'env(safe-area-inset-right)',
+					pb: 'env(safe-area-inset-bottom)',
+				},
 			}}
 			variant='persistent'
 			anchor='right'
@@ -73,7 +67,7 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 					{matches.map((match, i) => (
 						<ListItem key={i} disablePadding sx={{ position: 'relative' }}>
 							<ListItemButton
-								onClick={() => handleModalOpen(i)}
+								onClick={() => handleSelect(i)}
 								sx={{ px: 0.5, py: 2, overflow: 'hidden' }}
 							>
 								<Backdrop
@@ -110,13 +104,7 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 				</List>
 			</Box>
 
-			<ConfirmModal
-				isOpen={isModalOpen}
-				onClose={handleModalClose}
-				onConfirm={handleConfirmJumpMatch}
-				title={`${destMatchIndex+1}番目の試合から開始します`}
-				description='タイマもリセットされます'
-			/>
+			{confirmDialog}
 		</Drawer>
 	);
 }
