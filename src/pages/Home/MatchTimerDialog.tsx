@@ -119,7 +119,11 @@ function MatchTimerDialog({ isOpen, onClose }: Props) {
 			{isReady && !isUnlocked &&
 			<Alert
 				severity="warning"
-				sx={{ borderRadius: 0 }}
+				sx={{
+					borderRadius: 0,
+					pl: 'calc(16px + env(safe-area-inset-left))',
+					pr: 'calc(16px + env(safe-area-inset-right))',
+				}}
 				action={
 					<Button color="inherit" size="small" onClick={handleUnlock}>
 						有効化

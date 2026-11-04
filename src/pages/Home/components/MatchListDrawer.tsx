@@ -17,6 +17,7 @@ import { useMatchesActions, useMatchesState } from '~/contexts/matches';
 import { useConfirm } from '~/hooks/useConfirm';
 
 type Props = {
+	/** 一覧の内容に確保する幅（px）。右セーフエリア分は別途加算される */
 	width: number,
 	isOpen: boolean,
 	onClose: () => void,
@@ -44,14 +45,19 @@ function MatchListDrawer({ width, isOpen, onClose }: Props) {
 		listRef.current?.children[currentMatchIndex]?.scrollIntoView(true);
 	}, [currentMatchIndex]);
 
+	const drawerWidth = `calc(${width}px + env(safe-area-inset-right))`;
+
 	return (
 		<Drawer
 			sx={{
-				width: width,
+				width: drawerWidth,
 				flexShrink: 0,
 				[`& .MuiDrawer-paper`]: {
-					width: width,
+					width: drawerWidth,
 					boxSizing: 'border-box',
+					// セーフエリア分は padding で逃がし、一覧の内容には width ぶんの幅をそのまま確保する
+					// （padding を width の内側に取ると横向き（ノッチ側）で内容が入りきらず右端が欠ける）
+					pt: 'env(safe-area-inset-top)',
 					pr: 'env(safe-area-inset-right)',
 					pb: 'env(safe-area-inset-bottom)',
 				},
