@@ -9,7 +9,7 @@
 
 **Cycle Combo（バドミントン部タイマ）** — バドミントン部のダブルス練習向けインターバルタイマ兼ペア組み合わせローテーション表示アプリ。GitHub Pagesでホストし、Mac/Xcode不要でiOS端末（家族のスマホ等、VPN接続していない端末を含む）からPWAとして使えることを狙った構成。
 
-- 人数（4〜10人）とタイマー時間（1〜10分）を選択して開始すると、あらかじめ用意された「総当たり的にペアが重複しにくい組み合わせ表」（`src/contexts/matches/consts.tsx` の `matchList4`〜`matchList10`）に沿って試合組を順に表示する。
+- 人数（4〜20人）とタイマー時間（1〜10分）を選択して開始すると、あらかじめ用意された組み合わせ表（`src/contexts/matches/consts.tsx` の `matchList4`〜`matchList20`）に沿って試合組を順に表示する。表は `scripts/generate-matches.py` が決定的アルゴリズムで生成したもので、手で編集しない（「組み合わせ表の生成」参照）。
 - タイマーが0になると自動で次の試合組に進み、通知音（チャイム/ビープ/ベルから選択、音量ブースト可）を再生する。
 - PWA対応（`vite-plugin-pwa`）。新バージョンは自動リロードせず、ホーム画面にSnackbarを出してユーザー操作で更新する（`registerType: 'prompt'`、`src/components/UpdatePrompt.tsx`）。タイマー実行中は通知を出さない。
 - 画面回転（縦/横）で試合組一覧ドロワーの表示状態を自動切替する（`matchMedia('(orientation: landscape)')`）。
@@ -28,6 +28,14 @@
 - 着信・Siri・他アプリ音声・バックグラウンド移行で `AudioContext` が止まるため、`statechange` と `visibilitychange` で `resume()` を試み、それでも鳴らせない状態（`isUnlocked === false`）ならタイマー画面に「有効化」バナーを出してユーザー操作で復帰させる（リロード直後もこの経路）。
 - 音源は `src/assets/sound-*.mp3`（mono 96kbps）。旧 `timer.mp3` は `sound-chime.mp3` に改名。
 - **実機未検証**: 上記の消音スイッチ対策はこの環境（Linux、ブラウザなし）では確認できていない。iPhone で「マナーモードで鳴るか」「画面ロック中に鳴るか」を確認すること。
+
+### 組み合わせ表の生成（`scripts/generate-matches.py`）
+
+- `src/contexts/matches/consts.tsx` は生成物。変更したいときはスクリプト側を直して `python3 scripts/generate-matches.py` で再生成する（このサーバの python3 で動く。node 不要）。`--only N` で1人数分を標準出力に、`--check` で現在の `consts.tsx` が生成結果と一致するかを確認できる。
+- 表は循環リスト。1周の長さは「全ペアがちょうど k 回ずつ出る」長さ（ペア総数が奇数のときと4・5人は k=2、それ以外は k=1）。例: 4人6試合、5人10試合、6人15試合、7人21試合、8人14試合、9人18試合、10人45試合、20人95試合。
+- 評価は「同じ人の出場」「同じペア」「同じペアが同じ側」「同じ対戦相手」「同じ4人組」の再登場間隔を (期待間隔/間隔)² で罰する重み付き和。隣接試合で重なってよい人数の上限（9人以上は0＝連続出場なし、8人は1、7人1、6人2、5人3）はハード制約。
+- 探索はビームサーチ（同点は番号列の辞書順＝若い番号優先）＋末尾全列挙＋山登り。乱数は使わないので結果は一意。詳細はスクリプト冒頭のdocstring。
+- 人数が多いほど生成に時間がかかる（20人で数分）。全人数の再生成は10分程度を見込む。
 
 ### 状態管理の規約
 
@@ -51,7 +59,7 @@ src/
     timer/index.tsx        # タイマーProvider（tick駆動・永続化）
     timer/reducer.ts       # 終了予定時刻ベースの純粋reducer
     matches/index.tsx      # 人数と現在の組インデックス（試合リストは人数から導出）
-    matches/consts.tsx     # 4〜10人分の総当たり的組み合わせ表（ハードコード）と getMatchList
+    matches/consts.tsx     # 4〜20人分の組み合わせ表（scripts/generate-matches.py が生成）と getMatchList
     audio/index.tsx        # 音の種類・音量・ready/unlocked状態のProvider
     audio/engine.ts        # Web Audio + keep-alive <audio> の再生エンジン（Reactの外）
     wakeLock/              # nosleep.js による画面スリープ抑止
@@ -74,6 +82,8 @@ src/
     ConfirmModal.tsx         # 汎用確認モーダル（表示のみ）
     UpdatePrompt.tsx         # PWA更新通知
     DeployLinksDialog.tsx    # 本番/開発URLのQRコード表示（ホーム画面右上のQRアイコンから）
+scripts/
+  generate-matches.py      # 組み合わせ表の生成スクリプト（Python標準ライブラリのみ、node不要）
 ```
 
 ## コマンド
